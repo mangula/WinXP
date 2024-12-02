@@ -1,0 +1,202 @@
+ * {
+ 	/*background: black;*/
+ 	margin: 0;
+ 	padding: 0;
+ 	box-sizing: border-box;
+
+ }
+#game{
+	position: relative;;
+	background: rgba(255,0,0,.5);
+	font-family: Arial;
+	color:white;
+}
+#wrapper {
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%,0);
+	/*width: 300px;*/
+}
+#next,#score,#level,#lines{
+	background: black;
+}
+#score div, #level div, #lines div {
+	width: 100%;
+	height: 50%;
+	text-align: center;
+
+	/*color: white;*/
+}
+
+#play,#background,.brick,.blank, #next,#score,#level,#lines, #button-div{
+	position: absolute;
+}
+
+#button-div button{
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+.cell0, .cell1, .cell2, .cell3, .cell4, .cell5, .cell6, .cell7, .cell {
+	position: absolute;
+	z-index: 6;
+}
+#side-panel{
+	position: absolute;
+	left: 260px;
+	top: 20px;
+	height: 400px;
+	background: white;
+	width: 120px;
+	color: white;
+	line-height: 21px;
+}
+#tetris{
+	position: absolute;
+	background: black;
+	/*left: 50%;
+	transform: translate(-50%,0);*/
+}
+#game-over{
+	position: absolute;
+	background-color: rgba(0,0,0,0);
+	/*z-index: 10;*/
+	width: 100%;
+	/*height: 100%;*/
+}
+#game-over > div{
+	position: absolute;
+	background-color: rgba(0,0,0,0);
+	transition: color 1s linear;
+	
+	font-size:  23px;
+	
+	text-align: center;
+	left: 50%;
+	top: 50%;
+	width: 100%;
+	transform: translate(-50%,-50%);
+}
+#game-over .message div, .message div{
+	/*display:inline-block;*/
+	display:inline;
+}
+/*#game-over > div > div {
+	color:black;
+	transition: color 5s linear;
+}*/
+#game-over > div > div.dimm {
+	/*color:white;*/
+}
+#game-over.dim{
+	background-color: rgba(0,0,0,.5);
+	z-index: 10;
+	transition: background-color 0.5s linear;
+	/*transform: translate(-50%,-50%);*/
+}
+
+/*transition: color 1s linear;*/
+#game-over.dim > div > div {
+	/*color:white;*/
+}
+#background {
+	background-color: rgba(0,0,0,1);
+}
+
+.brick{
+
+	border-top: solid rgb(255, 150, 150);
+	border-left: solid rgb(255, 150, 150);
+	border-right: solid rgb(150, 0, 0);
+	border-bottom: solid rgb(150, 0, 0);
+	border-width: 5px;
+	background: rgb(255, 0, 0);
+}
+
+
+.blank{
+
+	/*border-top: solid rgb(255, 150, 150);
+	border-left: solid rgb(255, 150, 150);
+	border-right: solid rgb(150, 0, 0);
+	border-bottom: solid rgb(150, 0, 0);
+	border-width: 5px;*/
+	background: rgb(0, 0, 0);
+	z-index: 5;
+}
+
+.red, .cell0{
+	border-top: solid rgb(255, 150, 150);
+	border-left: solid rgb(255, 150, 150);
+	border-right: solid rgb(150, 0, 0);
+	border-bottom: solid rgb(150, 0, 0);
+	background: rgb(255, 0, 0);
+}
+
+.blue, .cell1{
+	border-top: solid rgb(150, 150, 255);
+	border-left: solid rgb(150, 150, 255);
+	border-right: solid rgb(0, 0, 150);
+	border-bottom: solid rgb(0, 0, 150);
+	background: rgb(0, 0, 255);
+}
+
+
+.green, .cell2{
+	border-top: solid rgb(150, 255, 150);
+	border-left: solid rgb(150, 255, 150);
+	border-right: solid rgb(0, 150, 0);
+	border-bottom: solid rgb(0, 150, 0);
+	background: rgb(0, 255, 0);
+}
+
+.pink, .cell3{
+	border-top: solid rgb(255, 150, 255);
+	border-left: solid rgb(255, 150, 255);
+	border-right: solid rgb(150, 0, 150);
+	border-bottom: solid rgb(150, 0, 150);
+	background: rgb(255, 0, 255);
+}
+
+.orange, .cell4{
+	border-top: solid rgb(255, 200, 150);
+	border-left: solid rgb(255, 200, 150);
+	border-right: solid rgb(150, 75, 0);
+	border-bottom: solid rgb(150, 75, 0);
+	background: rgb(255, 150, 0);
+}
+
+.yellow, .cell5{
+	border-top: solid rgb(255, 255, 150);
+	border-left: solid rgb(255, 255, 150);
+	border-right: solid rgb(150, 150, 0);
+	border-bottom: solid rgb(150, 150, 0);
+	background: rgb(255, 255, 0);
+}
+
+
+
+.orange1, .cell6{
+	border-top: solid rgb(150, 200, 255);
+	border-left: solid rgb(150, 200, 255);
+	border-right: solid rgb(0, 75, 150);
+	border-bottom: solid rgb(0, 75, 150);
+	background: rgb(0, 150, 255);
+}
+
+
+
+.cube {
+	height: 20px;
+	width: 20px;
+	border-width: 3px;
+}
+.outer_cube {
+width: 21px;
+	/*border-top: 1px solid white;
+	border-left: 1px solid white;
+	border-right: 1px solid gray;
+	border-bottom: 1px solid gray;*/
+	border: 0.5px solid black;
+	float: left;
+	}

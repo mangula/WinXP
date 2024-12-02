@@ -1,0 +1,202 @@
+
+
+/*src: https://icons.iconarchive.com/icons/famfamfam/mini/16/flag-red-icon.png*/
+/*https://icons.iconarchive.com/icons/yusuke-kamiyamane/fugue/16/flag-black-icon.png*/
+/*https://icons.iconarchive.com/icons/custom-icon-design/mini/16/Flag-icon.png*/
+/* https://iconarchive.com */
+
+/*
+font source
+https://www.cufonfonts.com/font/digital-numbers
+*/
+@font-face {
+    font-family: 'Digital Numbers Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Digital Numbers Regular'), url('DigitalNumbers-Regular.woff') format('woff');
+}
+
+
+/*
+icon creator
+http://www.xiconeditor.com/
+*/
+
+#minesweeper-wrapper{
+	background: #C0C0C0;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	border-top: 5px solid white;
+	border-left: 5px solid white;
+	border-width: 4px;
+	box-sizing: content-box;
+}
+
+
+#minesweeper-play, #minesweeper-header{
+	border-top: 5px solid #7f8180;
+	border-left: 5px solid #7f8180;
+	border-bottom: 5px solid white;
+	border-right: 5px solid white;
+	margin: 7px;
+}
+#minesweeper-header{
+	flex-basis: 40px;
+	border-width: 3px;
+	display:flex;
+	justify-content: space-between;
+}
+
+#minesweeper-play{
+	flex-grow: 1;
+	border-width: 5px;
+	position: relative;
+	background: #7f8180;
+}
+
+.minesweeper-cell{
+	position: absolute;
+	background: #C0C0C0;
+	border: 3px solid black;
+
+	border-top-color: white;
+	border-left-color: white;
+	border-right-color: #7f8180;
+	border-bottom-color: #7f8180;
+	text-align: center;
+	line-height: 20px;
+	font-family: Arial;
+	font-weight: bold;
+	cursor: pointer;
+	background-size: 13px 13px;
+	background-repeat: no-repeat;
+	background-position: 0px 1px;
+}
+
+.minesweeper-cell.minesweeper-free:active,
+.minesweeper-cell.minesweeper-question-indicator:active{
+	border: 1px solid #7f8180;
+	background-image: none; 
+}
+
+.minesweeper-cell.minesweeper-free{
+	border: 1px solid #7f8180;
+}
+
+.minesweeper-cell.minesweeper-bomb-explode{
+	background-color: red;
+}
+
+.minesweeper-cell.minesweeper-color1{
+	color: blue;
+}
+
+.minesweeper-cell.minesweeper-color2{
+	color: green;
+}
+
+.minesweeper-cell.minesweeper-color3{
+	color: red;
+}
+
+.minesweeper-cell.minesweeper-color4{
+	color: darkblue;
+}
+
+.minesweeper-cell.minesweeper-color5{
+	color: blue;
+}
+
+.minesweeper-cell.minesweeper-color6{
+	color: black;
+}
+
+.minesweeper-cell.minesweeper-color7{
+	color: black;
+}
+
+.minesweeper-cell.minesweeper-color8{
+	color: black;
+}
+
+.minesweeper-cell.minesweeper-flag-indicator {
+	background-image: url('mineseeper-flag2.ico');
+}
+
+.minesweeper-cell.minesweeper-question-indicator {
+	background-image: url('Faq-icon.png');
+	background-image: url('question.ico');
+	background-image: url('question2.ico');
+	background-position: 0.5px 0.5px;
+}
+
+.minesweeper-cell.hover{
+	border: 1px solid #7f8180;
+}
+
+.minesweeper-cell,
+.minesweeper-cell.minesweeper-flag-indicator.hover,
+.minesweeper-cell.minesweeper-question-indicator.hover{
+	border-width: 3px;
+	border-top-color: white;
+	border-left-color: white;
+	border-right-color: #7f8180;
+	border-bottom-color: #7f8180; 
+}
+
+.minesweeper-digital{
+	height: 20px;
+	background: red;
+	flex-basis: 45px;
+	font-family: "Digital Numbers Regular";
+	color:red;
+	font-size: 24px;
+	display: flex;
+
+}
+
+#minesweeper-header > div {
+	background: black;
+
+	height: 30px;
+	margin: 5px;
+}
+
+#minesweeper-header #minesweeper-indicator {
+	flex-basis: 30px;
+	border: 3px solid white;
+	border-right-color: #7f8180;
+	border-bottom-color: #7f8180;
+	background: #C0C0C0;
+	/*background-image: url('smile.ico');*/
+	background-repeat: no-repeat;
+	background-size: 26px;
+	background-position: 2px -1px;
+}
+#minesweeper-header #minesweeper-indicator:active {
+	border-right-color: white;
+	border-bottom-color: white;
+	border-top-color: #7f8180;
+	border-left-color: #7f8180;
+}
+
+#minesweeper-header .minesweeper-digital > div {
+	width:16px;
+	margin: -1px;
+}
+
+.minesweeper-cell.minesweeper-bomb-icon{
+	border: 1px solid #7f8180;
+}
+
+.minesweeper-cell.minesweeper-bomb-icon, .minesweeper-cell.minesweeper-bomb, .minesweeper-cell.minesweeper-miss{
+	background-image: url('favicon.ico');
+	background-size: 19px;
+	background-position: 0px 0px;
+	border: 1px solid #7f8180;
+}
+
+.minesweeper-cell.minesweeper-miss{
+	background-image: url('no-bomb.ico'), url('favicon.ico');
+}

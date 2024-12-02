@@ -1,0 +1,615 @@
+
+
+/*
+
+https://iconarchive.com/show/simple-rounded-social-icons-by-graphics-vibe/linkedin-icon.html
+
+monospace font
+https://fonts.google.com/specimen/VT323?category=Monospace#standard-styles
+
+
+icon editor
+http://www.xiconeditor.com/
+*/
+/*@import url('https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@300&display=swap');*/
+@import url('https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@200;300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@200;300&family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Changa:wght@400&family=Encode+Sans+Expanded:wght@200;300&family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;800&family=Changa:wght@200&family=Encode+Sans+Expanded:wght@200;300&family=Lato&display=swap');
+
+html {
+ 	background-color:black;
+ 	overflow: hidden;
+ 	font-family: 'Encode Sans Expanded', sans-serif;
+ 	font-family: 'Lato', sans-serif;
+ 	font-family: 'Cairo', sans-serif;
+	color: white;
+}
+body, html, div{
+	margin: 0;
+	padding: 0;
+}
+
+html, body, #winXP {
+ 	width: 100%;
+ 	height: 100%;
+}
+
+#winXP{
+	
+	
+	/*background-size: auto 100%;*/
+
+}
+
+#winXP .icon{
+	position: absolute;
+	/*background-color: red;*/
+	height: 80px;
+	width: 50px;
+	cursor: pointer;
+	overflow: hidden;
+	text-transform: capitalize;
+	color: black;
+	/*padding: 0 5px;*/
+	font-size: 14px;
+	/*font-weight: 300;*/
+	line-height: 15px;
+}
+
+#winXP .icon img:hover + .icon-name, #winXP .icon .icon-name:hover{
+	text-decoration: underline;
+	color:white;
+}
+
+#winXP .icon img{
+ 	/*
+ 	background-color: red;*/
+ 	height: 50px;
+ 	/*width: 50px;*/
+ 	position: absolute;
+ 	display: block;
+ 	top: 0;
+
+}
+
+
+#winXP .icon .icon-name{
+
+	position: absolute;
+	top:50px;
+	word-break: break-all;
+	text-align: center;
+	width: 100%;
+	max-height: 30px;
+}
+
+::selection {
+ 	background: transparent;
+}
+ /*::selection { color: red; }*/
+
+#winXP #taskbar {
+	background: red;
+	position: absolute;
+	bottom: 0;
+	height: 40px;
+	width: 100%;
+	background-color: #235bd9; /*blue;*/
+	z-index: 44;
+}
+#winXP #taskbar #sub-taskbar{
+	display:flex;
+	flex-direction:row;
+	height: 100%;
+}
+
+#winXP #taskbar #startMenu {
+  	
+ 	position: relative;
+ 
+ 	height: 100%;
+ 
+ 	background-color: #3b983b;
+ 
+ 	width: 100px;
+ 	border-radius: 0 8px 25px 0;
+ 	border-radius: 0 8px 22px 0;
+ 	border-right: 1px solid  #1e661e;
+ 
+ 	color:white;
+ 	font-style: italic;
+ 	font-size: 25px;
+
+ 	font-weight: bold;
+ 	text-shadow: 2px 2px #226424;
+ 	padding-left: 45px;
+ 	line-height: 40px;
+ 	cursor:pointer;
+ 	border-radius: 0 5px 9px 0 / 0 15px 24px 16px;
+ 	overflow: hidden;
+ 	box-shadow: 3px 0 #226424;
+ 	box-shadow: 1px 0 1px #226424;
+ 	box-shadow: 1px 2px 3px #226424;
+
+ 	z-index: 5;
+ 	flex-basis:125px;
+
+}
+
+#winXP #taskbar #startMenu img{
+ 	position: absolute;
+ 	display: block;
+ 	top: 5px;
+ 	left: 10px;
+ 	height: 30px;
+
+}
+
+#winXP #taskbar #startMenu img:first-of-type{
+ 	top: 7px;
+ 	left: 12px;
+ 	filter: grayscale(100%);
+ 	filter: brightness(50%);
+
+}
+
+#winXP #taskbar #startMenuDropDown{
+	height: 400px;
+	width: 300px;
+	background: red;
+	position: absolute;
+	bottom: 40px;
+	z-index: 500;
+	border: 2px solid #235bd9;
+	background: #235bd9;
+	border-radius: 10px 10px 0px 0px;
+	overflow: hidden;
+}
+#winXP #taskbar #startMenuDropDown #startMenuDropDownHeader {
+	height: 60px;
+	width: 100%;
+	
+	position: absolute;
+	top:0;
+	cursor:default;
+	background:
+		linear-gradient(to bottom, transparent -20%, rgba(255,255,255,0.5) 4%, rgba(255,255,255,0.0) 18%),
+		linear-gradient(to top, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.0) 50%);
+
+
+}
+#winXP #taskbar #startMenuDropDown #startMenuDropDownHeader img{
+	height: 50px;
+	margin-top: 6px;
+	margin-left: 6px;
+	display: block;
+	position: absolute;
+	border: 2px solid #e9e9e9;
+	border-radius: 3px;
+	background: #0D98EE;
+
+}
+#winXP #taskbar #startMenuDropDown #startMenuDropDownHeader div:last-of-type{
+	
+	margin-top: 13px;
+	margin-left: 67px;
+	font-size: 20px;
+	position: absolute;
+	color: white;
+	font-weight: bold;
+  	text-shadow: 2px 2px #000000;
+}
+
+#winXP #taskbar #startMenuDropDown #startMenuDropDownPanel {
+	
+	width: 100%;
+	background: white;
+	position: absolute;
+	top:60px;
+	bottom: 0;
+}
+:root{
+	color-scheme: light-dark;
+}
+#winXP #taskbar #startMenuDropDown #startMenuDropDownPanel #startMenuDropDownLeftPanel{
+	
+	width: 50%;
+	background: light-dark(white, #0072ff);
+	position: absolute;
+	left: 0px;
+	height: 100%;
+	cursor: pointer;
+}
+
+#winXP #taskbar #startMenuDropDown #startMenuDropDownPanel #startMenuDropDownLeftPanel .start-menu-icon{
+
+	height: 50px;
+	color:black;
+}
+#winXP #taskbar #startMenuDropDown #startMenuDropDownPanel #startMenuDropDownLeftPanel .start-menu-icon:hover{
+	/*background: #7f8180;
+	background: #C0C0C0;
+	background: #0D98EE;*/
+	color: gray;
+	
+}
+#winXP #taskbar #startMenuDropDown #startMenuDropDownPanel #startMenuDropDownLeftPanel .start-menu-icon img{
+	display: block;
+	position: absolute;
+	left:0;
+	height: 35px;
+	margin: 5px;
+}
+#winXP #taskbar #startMenuDropDown #startMenuDropDownPanel #startMenuDropDownLeftPanel .start-menu-icon div{
+	position: absolute;
+	left: 45px;
+	margin-top: 6px;
+	text-transform: capitalize;
+}
+
+#winXP #taskbar #startMenuDropDown #startMenuDropDownPanel #startMenuDropDownRightPanel{
+	
+	width: 50%;
+	background: gray;
+	background: #0D98EE;
+	background: #9ad8ff;
+	position: absolute;
+	right: 0px;
+	height: 100%;
+	padding: 5px;
+}
+
+#winXP #taskbar #startMenuDropDown #startMenuDropDownPanel #startMenuDropDownRightPanel .socialLink{
+	
+	background-size: 25px;
+	background-repeat: no-repeat;
+	background-position: 5px 0px;
+
+}
+
+
+#winXP #taskbar #startMenuDropDown #startMenuDropDownPanel #startMenuDropDownRightPanel .socialLink a{
+	
+	display: block;
+	margin-left: 35px;
+	text-decoration: none;
+	text-transform: lowercase;
+}
+
+
+#winXP #taskbar #startMenuDropDown #startMenuDropDownPanel #startMenuDropDownRightPanel .socialLink a:link,
+#winXP #taskbar #startMenuDropDown #startMenuDropDownPanel #startMenuDropDownRightPanel .socialLink a:visited {
+	
+	color:black;
+
+}
+
+#winXP #taskbar #startMenuDropDown #startMenuDropDownPanel #startMenuDropDownRightPanel .socialLink a:hover{
+	color: blue;
+	text-decoration: underline;
+}
+
+
+#winXP #taskbar #startMenuDropDown #startMenuDropDownPanel #startMenuDropDownRightPanel .socialLink a:active{
+	color: white;
+}
+
+#winXP #taskbar #taskbar-clock{
+	position: relative;
+	background: #0D98EE;
+	color: white;
+	height: 100%;
+	line-height: 42px;
+
+	font-size: 15px;
+	text-align: center;
+	cursor:pointer;
+	border-left: 1px solid rgba(0,0,0,0.7);
+    box-shadow: 0px 1px 3px rgba(0,0,0,0.7);
+    flex-basis: 100px;
+
+}
+
+#winXP #taskbar #sub-taskbar #taskbar-icon-container{
+	flex-basis: calc(100% - 225px);
+}
+
+
+#winXP #taskbar #sub-taskbar #taskbar-icon-container #taskbar-icons{
+	/*background: green;*/
+	height: 30px;
+	margin-top: 5px;
+	margin-left: 15px; 
+	/*width: 100%;*/
+	display: flex;
+}
+
+
+#winXP #taskbar #sub-taskbar #taskbar-icon-container #taskbar-icons .taskbar-item{
+	
+	height: 100%;
+	border-radius: 5px;
+	flex-basis: 150px;
+	z-index: 44;
+	color:rgba(255,255,255,0.8);
+	font-size: 15px;
+	background-repeat: no-repeat;
+	text-transform: capitalize;
+	cursor: pointer;
+
+	box-shadow: 2px 0px 1px #5252ff;
+	margin-left: 2px;
+	background-color: #3880F6;
+	background-image:linear-gradient(
+		to bottom,
+		rgba(255,255,255,0) -20%,
+		rgba(255,255,255,0.3) 5%,
+		rgba(255,255,255,0) 10%,
+		rgba(255,255,255,0) 60%,
+		rgba(255,255,255,0.2) 98%,
+		rgba(255,255,255,0) 120%
+	);
+	background-image:linear-gradient(
+		to bottom,
+		rgba(255,255,255,0) -20%,
+		rgba(255,255,255,0.3) 10%,
+		rgba(255,255,255,0) 25%,
+		rgba(255,255,255,0) 60%,
+		rgba(255,255,255,0.2) 90%,
+		rgba(255,255,255,0) 120%
+	);
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+}
+
+#winXP #taskbar #sub-taskbar #taskbar-icon-container #taskbar-icons .taskbar-item img {
+
+	width: 23px;
+	display: block;
+	position: absolute;
+	left: 5px;
+	top: 4px;
+}
+#winXP #taskbar #sub-taskbar #taskbar-icon-container #taskbar-icons .taskbar-item div {
+	position: absolute;
+	left: 32px;
+}
+#winXP #taskbar #sub-taskbar #taskbar-icon-container #taskbar-icons .taskbar-item:active{
+	color:black;
+}
+
+#winXP #taskbar #sub-taskbar #taskbar-icon-container #taskbar-icons .taskbar-item.taskbar-item-shadow{
+	position: absolute;
+	background:red;
+}
+
+#winXP #taskbar #sub-taskbar #taskbar-icon-container #taskbar-icons .taskbar-item.focused {
+	font-weight: 800;
+	color: white;
+	background-color: #3a77ff;
+
+	background-image:linear-gradient(
+		to bottom,
+		rgba(255,255,255,0) -20%,
+		rgba(255,255,255,0.3) 15%,
+		rgba(255,255,255,0) 30%,
+		rgba(255,255,255,0) 60%,
+		rgba(255,255,255,0.2) 80%,
+		rgba(255,255,255,0) 120%
+	);
+	background-image:linear-gradient(
+		to bottom,
+		rgba(255,255,255,0) -20%,
+		rgba(255,255,255,0.3) 5%,
+		rgba(255,255,255,0) 10%,
+		rgba(255,255,255,0) 60%,
+		rgba(255,255,255,0.2) 98%,
+		rgba(255,255,255,0) 120%
+	);
+	box-shadow: none;
+	box-shadow: 1px 0px 1px #5252ff;
+
+}
+
+.shadow{
+ 	position: absolute;
+ 	display: block;
+ 	top: 0.5px;
+ 	left: 0px;
+ 	height: 10px;
+ 	height: 100%;
+ 	width: 100%;
+	background:
+		linear-gradient(to bottom, transparent -20%, rgba(255,255,255,0.5) 6.25%, rgba(255,255,255,0.0) 23.3%),
+		linear-gradient(to top, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.0) 30%);
+
+}
+
+.window{
+	top:100px;
+	left:200px;
+	position: absolute;
+	border: 2px solid #235bd9;
+	background: #235bd9;
+	border-radius: 10px 10px 0px 0px;
+	overflow: hidden;
+	outline: 0px solid transparent;
+	z-index: 10;
+	color:black;
+	
+
+}
+
+.window.focused .window-header{
+	background: #235bd9;
+}
+.window .window-header{
+	height: 30px;
+	width: 100%;
+	
+	background: #3a77ff;
+	
+	display: flex;
+	cursor: pointer;
+	position: relative;
+
+}
+
+.window .window-sub-header{
+	flex-grow: 1;
+	height: 100%;
+	/*width: 100%;*/
+	
+	background-repeat: no-repeat;
+	background-size: 20px;
+	background-position: 5px 5px;
+	padding-left: 30px;
+	/*padding-top: 7px;*/
+	text-transform: capitalize;
+	font-weight: 300;
+	color: rgba(255,255,255,0.8);
+	/*background-color: #3a77ff;*/
+}
+
+
+.window .window-menu{
+	height: 25px;
+	width: 100%;
+	background: #ece9d8;
+	color: black;
+}
+
+.window .window-menu .sub-menu {
+
+	height: 100%;
+	padding: 0 5px;
+	float: left;
+	line-height: 25px;
+	font-size: 13px;
+}
+.window .window-menu .sub-menu:hover {
+	color: gray;
+	cursor: pointer;
+}
+
+.window .window-menu .drop-down-menu{
+	background: #ece9d8;
+	width: 120px;
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	position: absolute;
+	top:50px;
+	left:0px;
+
+	color: black;
+	z-index: 50;
+
+}
+
+.window .window-menu .sub-menu:hover .drop-down-menu{
+	border:1px solid black;
+}
+.window .window-menu .sub-menu .drop-down-menu li.selected{
+	font-weight: bold;
+}
+/*.window .window-menu .sub-menu .drop-down-menu li[data-difficulty]:first-of-type*/
+.window .window-menu .sub-menu .drop-down-menu li:first-of-type{
+	border-bottom: 1px solid black;
+}
+
+.window .window-menu .sub-menu .drop-down-menu li:last-of-type{
+	border-top: 1px solid black;
+}
+
+.window .window-menu .sub-menu .drop-down-menu li{
+	padding: 0 5px;
+}
+.window .window-menu .sub-menu .drop-down-menu li:hover{
+	color: gray;
+}
+.window .window-program {
+	position: relative;
+	top: 0px;
+}
+
+.window .button {
+	
+	margin-top: 5px;
+	margin-right: 2px;
+	height: 20px;
+	width: 20px;
+	flex-basis: 20px;
+	border: 1.5px solid white;
+	border-radius: 3px;
+	overflow: hidden;
+	z-index: 5;
+	background-size: 20.5px;
+	background-position: -1px -1px;
+}
+
+.window .close-button {
+	background-color: red;
+}
+
+.window.focused {
+	z-index: 50;
+	border-color:#3880F6;
+	border-color: #3f88ff;
+	display: block;
+}
+
+.window.focused .button{
+	opacity: 1.0;
+}
+
+.window.focused .window-header{
+
+	background-color: #235bd9;
+}
+
+.window .button{
+	opacity: 0.5;
+}
+
+.window.focused .window-sub-header{
+
+	color:white;
+	font-weight: 800;
+	
+}
+.window .minimize-button {
+	
+	background-image: url('images/minimize.ico');
+
+}
+
+.window .button > div{
+	
+	background: #3880F6;
+	height: 18px;
+	width: 18px;
+	margin: 1px;
+	box-shadow: 0px 0px 2px black;
+}
+
+.window .button .shadow{
+	position: relative;
+}
+
+
+.hide {
+	display: none;
+}
+
+.window .button.maximize-button{
+	
+	opacity: 0.5;
+	background-image: url('images/maximize2.ico');
+}
+.window .button.close-button{
+	background-image: url('images/close2.ico');
+}

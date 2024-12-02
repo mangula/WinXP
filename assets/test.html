@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		.icon{
+			position: absolute;
+			top:100px;
+			left: 150px;
+			background: red;
+			width: 50px;
+			overflow: hidden;
+			height: 70px;
+		}
+		.icon img{
+			position: absolute;
+			top: 0;
+			width: 100%;
+			display: block;
+
+		}
+		.icon span {
+			position: absolute;
+			bottom:0;
+			text-align: center;
+			word-break: break-all;
+		}
+		.icon span.overflow {
+			position: absolute;
+			bottom:0;
+			text-align: center;
+/*			word-break: break-all;
+			overflow-wrap: normal;
+			overflow-wrap: break-word;
+			overflow-wrap: anywhere;*/
+
+			overflow-wrap: break-word;
+
+		}
+		.empty {
+			background: gray;
+		}
+		.empty[dragable] {
+			background: red;
+			cursor:pointer;
+		}
+	</style>
+</head>
+<body>
+	<!--
+	<div class="icon"><img src="images/minesweeper.ico"><span>minesweeper</span></div>
+	<div class="icon" style="top: 200px"><img src="images/minesweeper.ico"><span class="overflow">minesweeper</span></div>
+-->
+	<script type="text/javascript">
+
+function Cell(){
+
+}
+
+
+let W = window.innerWidth;
+let H = window.innerHeight;
+console.log(W,H);
+
+let sizeW = 40;
+let sizeH = 80;
+
+let w = Math.floor(W / sizeW);
+let h = Math.floor(H / sizeH);
+
+const grid = [];
+
+for (let i=0; i<h; i++) {
+	for (let j=0; j<w; j++) {
+		//grid[i][j] = 
+		let cell = document.createElement('DIV');
+		cell.className = 'empty';
+		cell.style.position = 'absolute';
+		cell.style.top = i * sizeH + 'px';
+		cell.style.left = j * sizeW + 'px';
+		cell.style.width = sizeW + 'px';
+		cell.style.height = sizeH + 'px';
+
+
+		document.body.appendChild(cell);
+	}
+}
+
+let cell2 = document.querySelector('.empty');
+cell2.setAttribute('dragable', true);
+document.body.addEventListener('mousemove', ()=>{
+	console.log(event)	
+});
+
+//cell2.dragable = true;
+
+cell2.addEventListener('dragend', function (event) {
+	console.log('dragend');
+	console.log(event)
+	//srcElement
+	//target
+	//toElement
+});
+cell2.addEventListener('dragstart', function (event) {
+	console.log('dragstart');
+	console.log(event);
+	//createGHOST!!!
+});
+	</script>
+</body>
+</html>
+<pre>
+	element
+dragstart
+dragend
+
+
+	dropzone
+drop
+dragover
+dragenter
+dragleave
+</pre>
