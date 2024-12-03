@@ -31,10 +31,12 @@ class Taskbar{
 		subTaskbarElement.appendChild(this.startMenuDropDown);
 
 		startMenu.addEventListener('click', (event)=>{
+			console.log('START MENY CLICK')
 			event.stopPropagation();
 			this.startMenuDropDown.classList.toggle('hide');
 			document.querySelectorAll('.window.focused').forEach(function(element){
 				element.classList.remove('focused');
+				element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex);
 			});
 			document.querySelectorAll('.taskbar-item.focused').forEach(function(element){
 				element.classList.remove('focused');

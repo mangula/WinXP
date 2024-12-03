@@ -1,3 +1,6 @@
+const maxZindex = 10;
+
+
 function handleMouseDown(event){
 	event.stopPropagation();
 	function clearSelection() {
@@ -84,6 +87,7 @@ function handleMouseDown(event){
 	}
 
 	this.parentElement.classList.add('focused');
+	this.parentElement.style.zIndex = maxZindex
 	console.log('parent',this.parentElement);
 	
 	const windowName = this.parentElement.querySelector('.window-sub-header').innerHTML;
@@ -91,16 +95,20 @@ function handleMouseDown(event){
 		//console.log(element);
 		if (element.innerHTML === windowName) {
 			element.classList.add('focused');
+			element.style.zIndex = maxZindex;
 		} else {
 			element.classList.remove('focused');
+			element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);
 		}
 	});
 
 	document.querySelectorAll('.window').forEach(function(element){
 		if (element.querySelector('.window-sub-header').innerHTML === windowName) {
 			element.classList.add('focused');
+			element.style.zIndex = maxZindex;
 		} else {
 			element.classList.remove('focused');
+			element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);
 		}
 	});
 	let X = event.clientX - parseInt(this.parentElement.style.left);
@@ -201,17 +209,33 @@ class Window{
 			console.log('event CLICK', event);
 			document.querySelectorAll('.taskbar-item').forEach(function(element){
 				if (element.querySelector('DIV').innerHTML.toLowerCase() === name) {
+					
+					if(element.classList.contains('focused') == false) {
+						element.style.zIndex = maxZindex;
+					} else {
+						element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);						
+					}
+					
 					element.classList.toggle('focused');
 				} else {
 					element.classList.remove('focused');
+					element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);
 				}
 			});
 
 			document.querySelectorAll('.window').forEach(function(element){
 				if (element.querySelector('.window-sub-header').innerHTML === name) {
+
+					if(element.classList.contains('focused') == false) {
+						element.style.zIndex = maxZindex;
+					} else {
+						element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);
+					}
+
 					element.classList.toggle('focused') && (element.style.display = 'block');
 				} else {
 					element.classList.remove('focused');
+					element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);
 				}
 			});
 			document.querySelector('#startMenuDropDown').classList.add('hide');
@@ -261,6 +285,7 @@ class Window{
 			event.stopPropagation();
 			this.windowElement.style.display = 'none';
 			this.windowElement.classList.remove('focused');
+			this.windowElement
 			this.taskbarItemElement.classList.remove('focused');
 		});
 
@@ -274,6 +299,7 @@ class Window{
 			event.stopPropagation();
 			document.querySelectorAll('.focused').forEach(function(element){
 				element.classList.remove('focused');
+				element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);
 			});
 			this.focus();
 		});
@@ -293,6 +319,7 @@ class Window{
 	focus(){
 		this.windowElement.classList.add('focused');
 		this.windowElement.style.display = 'block';
+		this.windowElement.style.zIndex = maxZindex;
 		this.taskbarItemElement.classList.add('focused');
 	}
 

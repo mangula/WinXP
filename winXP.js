@@ -29,6 +29,7 @@ class WinXP{
 			});
 		});
 		window.addEventListener('click', (event)=>{
+
 			document.querySelectorAll('.window').forEach(function(windowElement){
 		       windowElement.classList.remove('focused');
 			});
@@ -58,13 +59,14 @@ class WinXP{
 		this.setBackground();
 		
 		//this.tetrisGame = new Tetris();
-		
+
 	}
 
 	start(program){
 		this.taskbar.startMenuDropDown.classList.add('hide');
 		this.taskbar.taskbarIconsElement.querySelectorAll('.taskbar-item').forEach(function(element){
 			element.classList.remove('focused');
+			element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex);
 		});
 
 

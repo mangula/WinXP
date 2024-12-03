@@ -24,7 +24,9 @@ html {
  	font-family: 'Encode Sans Expanded', sans-serif;
  	font-family: 'Lato', sans-serif;
  	font-family: 'Cairo', sans-serif;
-	color: light-dark(white, rgb(203,203,203));
+ 	color: light-dark(white, rgb(203,203,203));
+	/*color: light-dark(white, transparent);
+	text-shadow: 0 0 light-dark(transparent, white);*/
 }
 body, html, div{
 	margin: 0;
@@ -62,7 +64,9 @@ html, body, #winXP {
 
 #winXP .icon img:hover + .icon-name, #winXP .icon .icon-name:hover{
 	text-decoration: underline;
-	color:light-dark(white, rgb(203,203,203));;
+	color:light-dark(white, rgb(203,203,203));
+	color:light-dark(white, transparent);
+	text-shadow: light-dark(transparent, white);
 }
 
 #winXP .icon img{
@@ -601,7 +605,7 @@ html, body, #winXP {
 }
 
 .window.focused {
-	z-index: 50;
+	/*z-index: 50;*/
 	border-color:#3880F6;
 	border-color: #3f88ff;
 	display: block;
@@ -622,7 +626,8 @@ html, body, #winXP {
 
 .window.focused .window-sub-header{
 
-	color: light-dark(white, rgb(203,203,203));
+	color: light-dark(white, transparent);
+	text-shadow: 0 0 light-dark(transparent, white);
 	font-weight: 800;
 	
 }
