@@ -10,7 +10,7 @@ class WinXP{
 		this.imagesFolder = 'images/';
 		this.taskbar = new Taskbar(this.imagesFolder);
 		this.winXPElement.appendChild(this.taskbar.taskbarElement);
-
+		this.minesweeperGame = new MineSweeper();
 
 		this.iconsList = [
 			'minesweeper',
@@ -56,8 +56,9 @@ class WinXP{
 			'winXp_big.jpg'
 		];
 		this.setBackground();
-		//new MineSweeper();
-		//new Tetris();
+		
+		//this.tetrisGame = new Tetris();
+		
 	}
 
 	start(program){

@@ -103,12 +103,23 @@
 	background-color: rgba(0,0,0,1);
 }
 
-.brick{
+.brick{    
 
-	border-top: solid rgb(255, 150, 150);
-	border-left: solid rgb(255, 150, 150);
-	border-right: solid rgb(150, 0, 0);
-	border-bottom: solid rgb(150, 0, 0);
+	border-top: solid ;
+    border-left: solid rgb(255, 150, 150);
+    border-right: solid rgb(150, 0, 0);
+    border-bottom: solid rgb(150, 0, 0);
+
+	border-top: solid light-dark(rgb(255, 150, 150), rgb(255, 255, 255, .63));
+	border-left: solid light-dark(rgb(255, 150, 150), rgb(255, 255, 255, .63));
+	border-right: solid rgba(141, 141, 141, 0.9);
+	border-bottom: solid rgba(141, 141, 141, 0.9);
+	border-right: solid light-dark(rgba(141, 141, 141, 0.9), rgb(255, 150, 150, 0.5));
+	border-bottom: solid light-dark(rgba(141, 141, 141, 0.9), rgb(255, 150, 150, 0.5));
+
+	border-right: solid light-dark(rgba(141, 141, 141, 0.9), rgb(109, 109, 109, 0.43));
+	border-bottom: solid light-dark(rgba(141, 141, 141, 0.9), rgb(109, 109, 109, 0.43));
+	
 	border-width: 5px;
 	background: rgb(255, 0, 0);
 }

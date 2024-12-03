@@ -125,12 +125,21 @@ class Tetris extends Window{
 		) {
 			return;
 		}
-
-		switch(event.key.toLowerCase()){
-			case 's': this.move('down'); break;
-			case 'd': this.move('right'); break;
-			case 'a': this.move('left'); break;
-			case 'w': this.rotate(); break;
+		//console.log('key',event.key.toLowerCase())
+		//console.log('key',event.keyCode)
+		switch(event.keyCode){
+			case 98:
+			case 40:
+			case 83: this.move('down'); break;
+			case 102:
+			case 68:
+			case 39: this.move('right'); break;
+			case 37:
+			case 100:
+			case 65: this.move('left'); break;
+			case 104:
+			case 38:
+			case 87: this.rotate(); break;
 			default: return;
 		}
 		this.render();
@@ -155,8 +164,11 @@ class Tetris extends Window{
 			THIS = this;
 
 
-		window.removeEventListener('keypress', (event)=>this.getKey(event));
-		window.addEventListener('keypress', (event)=>this.getKey(event));
+		//window.removeEventListener('keypress', (event)=>this.getKey(event));
+		//window.addEventListener('keypress', (event)=>this.getKey(event));
+
+		window.removeEventListener('keydown', (event)=>this.getKey(event));
+		window.addEventListener('keydown', (event)=>this.getKey(event));
 
 		program.style.top = 1 * cellSize + dimm;
 		program.style.left = 1 * cellSize + dimm;

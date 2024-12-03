@@ -89,35 +89,43 @@ http://www.xiconeditor.com/
 }
 
 .minesweeper-cell.minesweeper-color1{
-	color: blue;
+	color: transparent;
+	text-shadow: 0 0 blue;
 }
 
 .minesweeper-cell.minesweeper-color2{
-	color: green;
+	color: transparent;
+	text-shadow: 0 0 green;
 }
 
 .minesweeper-cell.minesweeper-color3{
-	color: red;
+	color: transparent;
+	text-shadow: 0 0 red;
 }
 
 .minesweeper-cell.minesweeper-color4{
-	color: darkblue;
+	color: transparent;
+	text-shadow: 0 0 darkblue;
 }
 
 .minesweeper-cell.minesweeper-color5{
-	color: blue;
+	color: transparent;
+	text-shadow: 0 0 blue;
 }
 
 .minesweeper-cell.minesweeper-color6{
-	color: black;
+	color: transparent;
+	text-shadow: 0 0 black;
 }
 
 .minesweeper-cell.minesweeper-color7{
-	color: black;
+	color: transparent;
+	text-shadow: 0 0 black;
 }
 
 .minesweeper-cell.minesweeper-color8{
-	color: black;
+	color: transparent;
+	text-shadow: 0 0 black;
 }
 
 .minesweeper-cell.minesweeper-flag-indicator {

@@ -65,6 +65,13 @@ class Taskbar{
 
 		this.startMenuDropDownLeftPanel = document.createElement('DIV');
 		this.startMenuDropDownLeftPanel.setAttribute('id', 'startMenuDropDownLeftPanel');
+		
+		const canvas = document.createElement('CANVAS');
+		this.startMenuDropDownLeftPanel.appendChild(canvas);
+		const ctx = canvas.getContext('2d');
+		ctx.fillStyle = 'white';
+		ctx.fillRect(0,0,1202,202);
+
 
 		const startMenuDropDownRightPanel = document.createElement('DIV');
 		startMenuDropDownRightPanel.setAttribute('id', 'startMenuDropDownRightPanel');

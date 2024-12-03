@@ -142,12 +142,21 @@ class Window{
 		headerElement.appendChild(subHeaderElement);
 
 		menuElement.classList.add('window-menu');
+		const canvas = document.createElement('CANVAS');
+		const ctx = canvas.getContext('2d');
+		ctx.fillStyle = '#ece9d8';
+		ctx.fillRect(0,0,300,300);
+		menuElement.appendChild(canvas)
 
 		const fileMenuElement = document.createElement('DIV');
 		fileMenuElement.classList.add('sub-menu');
 		fileMenuElement.innerHTML = 'Game';
 		menuElement.appendChild(fileMenuElement);
 
+		const canvasSubMenu = document.createElement('CANVAS');
+		const ctxSubMenu = canvasSubMenu.getContext('2d');
+		ctxSubMenu.fillStyle = '#ece9d8';
+		ctxSubMenu.fillRect(0,0,300,300);
 
 		this.fileDropDownElement = document.createElement('UL');
 		this.fileDropDownElement.classList.add('drop-down-menu');
@@ -157,6 +166,7 @@ class Window{
 		const exitString = 'Exit';
 
 		this.fileDropDownElement.innerHTML = '<li>' + newGameString + '</li><li>' + exitString + '</li>';
+		this.fileDropDownElement.appendChild(canvasSubMenu)
 		fileMenuElement.appendChild(this.fileDropDownElement);
 
 		fileMenuElement.addEventListener('click', (event) => {
