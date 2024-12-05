@@ -333,7 +333,9 @@ html, body, #winXP {
 	font-size: 15px;
 	text-align: center;
 	cursor:pointer;
+	cursor: auto;
 	border-left: 1px solid rgba(0,0,0,0.7);
+	border-left: 1px solid light-dark(rgba(0,0,0,0.7), rgb(203,203,203));
     box-shadow: 0px 1px 3px rgba(0,0,0,0.7);
     flex-basis: 100px;
 
@@ -657,8 +659,9 @@ html, body, #winXP {
 
 .window .button.maximize-button{
 	
-	opacity: 0.5;
+	opacity: 0.3;
 	background-image: url('images/maximize2.ico');
+	cursor: auto;
 }
 .window .button.close-button{
 	background-image: url('images/close2.ico');

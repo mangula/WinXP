@@ -36,11 +36,14 @@ class Taskbar{
 			this.startMenuDropDown.classList.toggle('hide');
 			document.querySelectorAll('.window.focused').forEach(function(element){
 				element.classList.remove('focused');
+			});
+			document.querySelectorAll('.window').forEach(function(element){
 				element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex);
 			});
 			document.querySelectorAll('.taskbar-item.focused').forEach(function(element){
 				element.classList.remove('focused');
 			});
+			setZindexes();
 
 		});
 

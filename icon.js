@@ -15,6 +15,7 @@ class Icon{
 			});
 			winXp.start(icon);
 			event.stopPropagation();
+			setZindexes();
 		});
 
 		this.image = new Image();

@@ -1,5 +1,25 @@
-const maxZindex = 10;
+const maxZindex = 20;
 
+function setZindexes(){
+	const indexes = [];
+	const arr = [];
+	const allWindows = document.body.querySelectorAll('.window');
+	allWindows.forEach((element,index)=>{
+		const zIndex = +element.style.zIndex;
+		indexes[zIndex] = index;
+		arr.push(zIndex);
+	})
+
+	let index = maxZindex;
+	for (const zIndex of arr.sort().sort(_=>-1)){
+		allWindows[indexes[zIndex]].style.zIndex = index--;
+	}
+
+	document.querySelectorAll('.window').forEach(e=>{
+	    console.log(e.style.zIndex, e.querySelector('.window-sub-header').innerHTML)
+	})
+
+}
 
 function handleMouseDown(event){
 	event.stopPropagation();
@@ -95,10 +115,8 @@ function handleMouseDown(event){
 		//console.log(element);
 		if (element.innerHTML === windowName) {
 			element.classList.add('focused');
-			element.style.zIndex = maxZindex;
 		} else {
 			element.classList.remove('focused');
-			element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);
 		}
 	});
 
@@ -111,12 +129,18 @@ function handleMouseDown(event){
 			element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);
 		}
 	});
+	setZindexes();
 	let X = event.clientX - parseInt(this.parentElement.style.left);
 	let Y = event.clientY - parseInt(this.parentElement.style.top);
 	//console.log(X,Y);
 	window.addEventListener('mousemove', moveWindow);
 	window.addEventListener('mouseup', releaseWindow);;
 }
+
+const windowPosition = {
+	minesweeper: 2 * 50,
+	tetris: 2.5 * 50,
+};
 
 class Window{
 	constructor(name){
@@ -132,9 +156,11 @@ class Window{
 		//HERE TODO
 		//Z-INDEX
 		//POSITION
-		this.windowElement.style.top = (Math.floor(Math.random() * 3) + 2) * 50 + 'px';
-		this.windowElement.style.left = (Math.floor(Math.random() * 3) + 2) * 50 + 'px';
+		//this.windowElement.style.top = (Math.floor(Math.random() * 3) + 2) * 50 + 'px';
+		//this.windowElement.style.left = (Math.floor(Math.random() * 3) + 2) * 50 + 'px';
 
+		this.windowElement.style.top = this.windowElement.style.left = windowPosition[name] + 'px';
+		console.log('name',name,this.windowElement.style.top);
 
 		this.windowElement.classList.add('window');
 
@@ -209,37 +235,39 @@ class Window{
 			console.log('event CLICK', event);
 			document.querySelectorAll('.taskbar-item').forEach(function(element){
 				if (element.querySelector('DIV').innerHTML.toLowerCase() === name) {
-					
-					if(element.classList.contains('focused') == false) {
-						element.style.zIndex = maxZindex;
-					} else {
-						element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);						
-					}
-					
 					element.classList.toggle('focused');
 				} else {
 					element.classList.remove('focused');
-					element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);
 				}
 			});
 
 			document.querySelectorAll('.window').forEach(function(element){
+				element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);
+			});
+			document.querySelectorAll('.window').forEach(function(element){
+				
 				if (element.querySelector('.window-sub-header').innerHTML === name) {
-
-					if(element.classList.contains('focused') == false) {
-						element.style.zIndex = maxZindex;
-					} else {
-						element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);
-					}
-
+					//console.log('%c'+element.querySelector('.window-sub-header').innerHTML, 'color:red;font-size:3em;background:yellow');
 					element.classList.toggle('focused') && (element.style.display = 'block');
+					if(element.classList.contains('focused')) {
+						document.querySelectorAll('.window').forEach(function(element){
+							//element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);
+						});
+						
+					} else {
+						//element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);
+					}
+					element.style.zIndex = maxZindex;
+
 				} else {
 					element.classList.remove('focused');
-					element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);
+					//element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex - 1);
 				}
 			});
 			document.querySelector('#startMenuDropDown').classList.add('hide');
 			event.stopPropagation();
+
+			setZindexes();
 		});
 
 		const taskbarItemShadow = document.createElement('DIV');
