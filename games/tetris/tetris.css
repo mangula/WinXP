@@ -36,6 +36,7 @@
 	display: block;
 	height: 100%;
 	width: 100%;
+	background-color: #235bd9;
 }
 .cell0, .cell1, .cell2, .cell3, .cell4, .cell5, .cell6, .cell7, .cell {
 	position: absolute;
@@ -47,6 +48,7 @@
 	top: 20px;
 	height: 400px;
 	background: white;
+	background: #ff5a5a;
 	width: 120px;
 	color: white;
 	line-height: 21px;
@@ -103,25 +105,19 @@
 	background-color: rgba(0,0,0,1);
 }
 
-.brick{    
+.brick{
 
-	border-top: solid ;
-    border-left: solid rgb(255, 150, 150);
-    border-right: solid rgb(150, 0, 0);
-    border-bottom: solid rgb(150, 0, 0);
+	border: solid 1px black;
 
-	border-top: solid light-dark(rgb(255, 150, 150), rgb(255, 255, 255, .63));
-	border-left: solid light-dark(rgb(255, 150, 150), rgb(255, 255, 255, .63));
-	border-right: solid rgba(141, 141, 141, 0.9);
-	border-bottom: solid rgba(141, 141, 141, 0.9);
-	border-right: solid light-dark(rgba(141, 141, 141, 0.9), rgb(255, 150, 150, 0.5));
-	border-bottom: solid light-dark(rgba(141, 141, 141, 0.9), rgb(255, 150, 150, 0.5));
+	border-top: solid light-dark(rgba(161, 51, 51, 0.9), rgb(255, 255, 255, .63));
+	border-left: solid light-dark(rgba(161, 51, 51, 0.9), rgb(255, 255, 255, .63));
+	
 
-	border-right: solid light-dark(rgba(141, 141, 141, 0.9), rgb(109, 109, 109, 0.43));
-	border-bottom: solid light-dark(rgba(141, 141, 141, 0.9), rgb(109, 109, 109, 0.43));
+	border-right: solid light-dark(rgba(169, 51, 51, 0.5), rgb(109, 109, 109, 0.43));
+	border-bottom: solid light-dark(rgba(161, 51, 51, 0.5), rgb(109, 109, 109, 0.43));
 	
 	border-width: 5px;
-	background: rgb(255, 0, 0);
+	/*background: rgb(255, 0, 0);*/
 }
 
 
@@ -137,18 +133,23 @@
 }
 
 .red, .cell0{
-	border-top: solid rgb(255, 150, 150);
-	border-left: solid rgb(255, 150, 150);
-	border-right: solid rgb(150, 0, 0);
-	border-bottom: solid rgb(150, 0, 0);
+	border-top: solid light-dark(rgb(255, 150, 150),  rgb(231, 150, 150));
+	border-left: solid light-dark(rgb(255, 150, 150),  rgb(231, 150, 150));
+	border-top: solid light-dark(rgb(255, 150, 150),  rgb(179, 116, 116));
+	border-left: solid light-dark(rgb(255, 150, 150),  rgb(179, 116, 116));
+	border-right: solid light-dark(rgb(150, 0, 0),  rgb(255, 23, 23));;
+	border-bottom: solid light-dark(rgb(150, 0, 0),  rgb(255, 23, 23));;
 	background: rgb(255, 0, 0);
+	background: light-dark(rgb(255, 0, 0), rgb(231, 0, 0));
 }
 
 .blue, .cell1{
-	border-top: solid rgb(150, 150, 255);
-	border-left: solid rgb(150, 150, 255);
-	border-right: solid rgb(0, 0, 150);
-	border-bottom: solid rgb(0, 0, 150);
+	border-top: solid light-dark(rgb(150, 150, 255), rgb(127,127,255));
+	border-left: solid light-dark(rgb(150, 150, 255), rgb(127,127,255));
+	border-right: solid light-dark(rgb(0, 0, 150), rgba(46, 46, 139,0.46));
+	border-bottom: solid light-dark(rgb(0, 0, 150), rgba(46, 46, 139,0.46));
+	border-right: solid light-dark(rgb(0, 0, 150), rgba(239, 97, 97, 0.46));
+	border-bottom: solid light-dark(rgb(0, 0, 150), rgba(239, 97, 97, 0.46));
 	background: rgb(0, 0, 255);
 }
 
@@ -164,8 +165,8 @@
 .pink, .cell3{
 	border-top: solid rgb(255, 150, 255);
 	border-left: solid rgb(255, 150, 255);
-	border-right: solid rgb(150, 0, 150);
-	border-bottom: solid rgb(150, 0, 150);
+	border-right: solid light-dark(rgb(150, 0, 150), rgb(217, 27, 217));
+	border-bottom: solid light-dark(rgb(150, 0, 150), rgb(217, 27, 217));
 	background: rgb(255, 0, 255);
 }
 
@@ -178,20 +179,19 @@
 }
 
 .yellow, .cell5{
-	border-top: solid rgb(255, 255, 150);
-	border-left: solid rgb(255, 255, 150);
+	border-top: solid light-dark( rgb(255, 255, 150),  rgb(231, 231, 150));
+	border-left: solid light-dark( rgb(255, 255, 150),  rgb(231, 231, 150));
 	border-right: solid rgb(150, 150, 0);
 	border-bottom: solid rgb(150, 150, 0);
 	background: rgb(255, 255, 0);
+	background: light-dark(rgb(255, 255, 0), rgb(231, 231, 0));
 }
-
-
 
 .orange1, .cell6{
 	border-top: solid rgb(150, 200, 255);
 	border-left: solid rgb(150, 200, 255);
-	border-right: solid rgb(0, 75, 150);
-	border-bottom: solid rgb(0, 75, 150);
+	border-right: solid light-dark(rgb(0, 75, 150), rgb(108, 141, 175));
+	border-bottom: solid light-dark(rgb(0, 75, 150), rgb(108, 141, 175));
 	background: rgb(0, 150, 255);
 }
 

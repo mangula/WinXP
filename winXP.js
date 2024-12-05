@@ -32,6 +32,7 @@ class WinXP{
 
 			document.querySelectorAll('.window').forEach(function(windowElement){
 		       windowElement.classList.remove('focused');
+		       windowElement.style.zIndex ? windowElement.style.zIndex-- : (windowElement.style.zIndex = maxZindex);
 			});
 			document.querySelectorAll('.taskbar-item').forEach(function(taskbarItemElement){
 		       taskbarItemElement.classList.remove('focused');
@@ -47,6 +48,7 @@ class WinXP{
 				event.stopPropagation();
 				document.querySelectorAll('.window').forEach(function(windowElement){
 					windowElement.classList.remove('focused');
+					windowElement.style.zIndex ? windowElement.style.zIndex-- : (windowElement.style.zIndex = maxZindex);
 				});
 				const name = this.querySelector('div').innerHTML.toLowerCase();
 				THIS.start(name);

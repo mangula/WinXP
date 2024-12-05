@@ -8,6 +8,7 @@ class Icon{
 		this.iconElement.addEventListener('click', function(event){
 			document.querySelectorAll('.window').forEach(function(element){
 				element.classList.remove('focused');
+				element.style.zIndex ? element.style.zIndex-- : (element.style.zIndex = maxZindex);
 			});
 			document.querySelectorAll('.taskbar-item').forEach(function(element){
 				element.classList.remove('focused');
