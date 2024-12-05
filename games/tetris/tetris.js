@@ -68,6 +68,24 @@ class Tetris extends Window{
 		this.tetrisElement.setAttribute('id', 'tetris');
 		this.programElement.appendChild(this.tetrisElement);
 
+		const lastULElement = this.fileDropDownElement.querySelector('li:last-of-type');
+		const difficultyMode = ['Start Level 2', 'Start Level 5', 'Start Level 10'];
+
+		for(const index in difficultyMode){
+			const difficultyElement = document.createElement('LI');
+			difficultyElement.dataset.difficulty = index;
+			difficultyElement.innerHTML = difficultyMode[index];
+			difficultyElement.addEventListener('click', (event)=>{
+				this.difficulty = +event.target.dataset.difficulty;
+				//this.setDifficulty();
+				console.log(difficultyMode[index])
+				this.startGame(+difficultyMode[index].split(' ').pop());
+			});
+			this.fileDropDownElement.insertBefore(difficultyElement,lastULElement);
+		}
+
+		this.difficultyElements = this.fileDropDownElement.querySelectorAll('[data-difficulty]');
+
 		this.playElement = document.createElement('DIV');
 		this.playElement.setAttribute('id', 'play');
 		this.tetrisElement.appendChild(this.playElement);
@@ -492,12 +510,16 @@ class Tetris extends Window{
 		this.linesElement.children[1].innerHTML = this.lines;
 	}
 
+	setIntervalTime(){
+		this.intervalTime = 1000 - this.level * 100;
+		this.intervalTime < 100 && (this.intervalTime = 50);
+	}
+
 	setLevel(){
 
 		if(this.lines / (this.level + 1) >= 10) {
 			this.level++;
-			this.intervalTime = 1000 - this.level * 100;
-			this.intervalTime < 100 && (this.intervalTime = 50);
+			this.setIntervalTime();
 			this.clearInterval();
 			this.setInterval();
 		}
@@ -506,10 +528,10 @@ class Tetris extends Window{
 
 	}
 
-	reset(){
+	reset(level){
 		this.score = 0;
 		this.lines = 0;
-		this.level = 0;
+		this.level = level || 0;
 		this.setLevel();
 		this.setScore();
 		this.setLines();
@@ -561,15 +583,16 @@ class Tetris extends Window{
 		clearInterval(this.interval);
 	}
 
-	startGame(){
-		this.reset();
+	startGame(level){
+		this.level = (level-1) || 0;
+		this.reset(this.level);
 
 		this.currentShape = new TetrisShape();
 		this.nextShape = new TetrisShape();
 
 		this.updateNextShape();
 		this.render();
-
+		this.setIntervalTime();
 		this.setInterval();
 	}
 
