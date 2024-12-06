@@ -43,6 +43,7 @@ html, body, #winXP {
 	
 	/*background-size: auto 100%;*/
 
+    background-position-y: center;
 }
 
 #winXP .icon{
