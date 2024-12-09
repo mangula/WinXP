@@ -37,6 +37,42 @@ class Worm {
 			this.bazookaAngle = 0;
 		}
 	}
+	powerUp(){
+		
+		if (this.poweringUp){
+			return;
+		}
+		
+		console.log("POWERING UP");
+		this.poweringUp = true;
+		this.power = 1;
+		this.renderTrail();
+		this.interval = setInterval(()=>{
+			this.power++;
+			if (this.power == this.powerArray.length) {
+				this.fire();
+				return;
+			}
+			this.renderTrail();
+			
+		}, 30);
+	}
+	renderTrail(){
+		console.log("POWER UP", this.power);
+		const startPoint = this.powerArray[0];
+		this.ctx.beginPath();
+		this.ctx.lineWidth = 10;
+		this.ctx.moveTo(startPoint.x, startPoint.y);
+		const endPoint = this.powerArray[this.power];
+		this.ctx.lineTo(endPoint.x, endPoint.y);
+		this.ctx.stroke();
+	}
+	fire(){
+		clearInterval(this.interval);
+		this.poweringUp = false;
+		console.log("FIRE");
+		this.render();
+	}
     adjustH(){
         for (let h=0; h<this.binaryLayout.length; h++) {
             if (this.binaryLayout[h][this.col] == this.brick) {
@@ -51,7 +87,7 @@ class Worm {
         //console.log('ctx 333', this.ctx);
 		let x = this.col * this.pixelZoom - this.width / 2;
 		let y = this.row * this.pixelZoom - this.height / 1.5;
-		this.ctx.clearRect(x - 50, y - 50,100,100)
+		this.ctx.clearRect(x - 100, y - 100,300,200)
 		this.ctx.save();
 		this.ctx.scale(this.orientation?1:-1,1);
         this.ctx.drawImage(this.image, this.orientation ? x : -x - 32, y);
@@ -80,15 +116,35 @@ class Worm {
 	    )
 		this.ctx.restore();
 		
-		return
 		x-=32/2 * 3.5 * (this.orientation ? e: -0.35);
 		x += 16;
 		
 		y+=5;
+		
+		this.ctx.fillStyle = 'white';
+		this.powerArray = Array(30).fill(0);
+		const sinTotalAngle = Math.sin(totalAngle * Math.PI / 180);
+		const cosTotalAngle = Math.cos(totalAngle * Math.PI / 180);
+		for (const i in this.powerArray) {
+			//console.log('i', i)
+			const trailX = i * 3 * cosTotalAngle * (this.orientation ? 1 : -1) + x;
+			const trailY = i * 3 * sinTotalAngle + y;
+			this.powerArray[i] = {x:trailX, y:trailY};
+			if(i>3 && i%5 == 0){
+				this.ctx.beginPath();
+				this.ctx.moveTo(trailX + 2, trailY);
+				this.ctx.arc(trailX, trailY, 2, 0, 2 * Math.PI);
+				this.ctx.fill();
+			}
+		}
+		
+		return
 		this.ctx.moveTo(x-50,y);
 		this.ctx.lineTo(x+50,y);
 		this.ctx.moveTo(x, y-50);
 		this.ctx.lineTo(x, y+50);
+		
+		
 		this.ctx.stroke();
 		return;
 		this.ctx.moveTo(x + deltaX - 50, y + deltaY);
@@ -116,6 +172,7 @@ class Worms extends Window{
         this.pixelZoom = 10;//this.cellSize % this.pixelZoom === 0 !!!!!!!
 		this.dimm = 'px';
         this.brick = '*';
+		this.fire = ' ';
         
         this.imagesPath = "games/worms/images/";
         
@@ -233,7 +290,7 @@ class Worms extends Window{
     setEventListeners(){
 		window.addEventListener('keydown', (event)=>{
 			if (this.myTurn && this.windowElement.classList.contains('focused')) {
-				console.log('event', event.key);
+				//console.log('event', event.key);
 				switch(event.key.toLowerCase()){
 					case 'arrowRight':
 					case 'd':
@@ -256,14 +313,20 @@ class Worms extends Window{
 					case 2:
 						this.worms[0].adjustBazookaAngle(-1);
 						break;
+					case this.fire:
+						this.worms[0].powerUp();
+						return; // not to render
 				}
 				
 				this.worms[0].render();
 			}
 		})
-		if (this.myTurn) {
-			
-		}
+		
+		window.addEventListener('keyup', (event)=>{
+			if (event.key == this.fire) {
+				this.worms[0].fire();
+			}
+		});
 	}
     render(){
         
