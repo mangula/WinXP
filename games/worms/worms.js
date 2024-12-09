@@ -18,7 +18,7 @@ class Worm {
         //this.bazooka.src = `games/worms/images/bazooka.png`;
 		this.bazooka.src = `games/worms/images/bazooka0-green32.png`;
 		
-		this.bazookaAngle = 45;
+		this.bazookaAngle = 90;
 		//this.adjustBazookaAngle();
         //this.render();
         this.image.addEventListener('load',()=>{
@@ -62,27 +62,46 @@ class Worm {
 		
 		//this.ctx.translate(x,y);
 		//x+=32/2 * 2;
-		x+=32/2 * 3.5 * (this.orientation ? 0.9: -0.35);
+		const e=0.92;
+		x+=32/2 * 3.5 * (this.orientation ? e: -0.35);
 		y+=32/2;
 		this.ctx.translate(x,y);
 		this.ctx.scale(this.orientation ? 1 : -1, 1)
 		const totalAngle = this.orientation ? (this.bazookaAngle + 90 + 180 ) : (this.bazookaAngle - 90);
 		this.ctx.rotate(totalAngle * Math.PI/180);
 		
+		const deltaX = -Math.sin(this.bazookaAngle *Math.PI / 180) * 40 - 10;
+		const deltaY = -Math.cos(this.bazookaAngle *Math.PI / 180) * 40 - 10;
 		
 		this.ctx.drawImage(
 			this.bazooka,
-		    -Math.sin(this.bazookaAngle *Math.PI / 180) * 30 - 5,
-		    -Math.cos(this.bazookaAngle *Math.PI / 180) * 40 - 10
+		    deltaX,
+		    deltaY
 	    )
-		
 		this.ctx.restore();
-		return;
+		
+		return
+		x-=32/2 * 3.5 * (this.orientation ? e: -0.35);
+		x += 16;
+		
+		y+=5;
 		this.ctx.moveTo(x-50,y);
 		this.ctx.lineTo(x+50,y);
 		this.ctx.moveTo(x, y-50);
 		this.ctx.lineTo(x, y+50);
 		this.ctx.stroke();
+		return;
+		this.ctx.moveTo(x + deltaX - 50, y + deltaY);
+		this.ctx.lineTo(x + deltaX + 50,y + deltaY);
+		this.ctx.moveTo(x + deltaX, y-50 + deltaY);
+		this.ctx.lineTo(x + deltaX, y+50 + deltaY);
+		this.ctx.stroke();
+		
+		return;
+		this.ctx.moveTo(x-50,y);
+		this.ctx.lineTo(x+50,y);
+		this.ctx.moveTo(x, y-50);
+		this.ctx.lineTo(x, y+50);
 		// we’re done with the rotating so restore the unrotated context
 		
     }
