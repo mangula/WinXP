@@ -129,13 +129,13 @@ http://www.xiconeditor.com/
 }
 
 .minesweeper-cell.minesweeper-flag-indicator {
-	background-image: url('mineseeper-flag2.ico');
+	background-image: url('images/mineseeper-flag2.ico');
 }
 
 .minesweeper-cell.minesweeper-question-indicator {
-	background-image: url('Faq-icon.png');
-	background-image: url('question.ico');
-	background-image: url('question2.ico');
+	background-image: url('images/Faq-icon.png');
+	background-image: url('images/question.ico');
+	background-image: url('images/question2.ico');
 	background-position: 0.5px 0.5px;
 }
 
@@ -206,5 +206,5 @@ http://www.xiconeditor.com/
 }
 
 .minesweeper-cell.minesweeper-miss{
-	background-image: url('no-bomb.ico'), url('favicon.ico');
+	background-image: url('images/no-bomb.ico'), url('favicon.ico');
 }

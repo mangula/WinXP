@@ -7,6 +7,7 @@ class MineSweeper extends Window{
 		this.dimm = 'px';
 		this.bombChar = '*';
 		this.freeChar = ' ';
+		this.imagesPath = "games/minesweeper/images/";
 
 		this.programElement.setAttribute('id', 'minesweeper-wrapper');
 		
@@ -38,8 +39,6 @@ class MineSweeper extends Window{
 
 		this.programElement.appendChild(minesweeperHeader);
 		this.programElement.appendChild(this.minesweeperPlay);
-
-		this.fileDropDownElement;
 
 		const lastULElement = this.fileDropDownElement.querySelector('li:last-of-type');
 		const difficultyMode = ['Beginner', 'Intermediate', 'Expert'];
@@ -143,7 +142,7 @@ class MineSweeper extends Window{
 
 		this.gameOver = false;
 		this.minesweeperPlay.innerHTML = '';
-		this.minesweeperIndicator.style.backgroundImage = 'url("games/minesweeper/smile.ico")';
+		this.minesweeperIndicator.style.backgroundImage = `url("${this.imagesPath}smile.ico")`;
 
 		const THIS = this;
 		for (let i=0; i<this.H; i++) {
@@ -199,7 +198,7 @@ class MineSweeper extends Window{
 					
 					if (event.button === 0) {
 						cell.classList.add('hover');
-						this.minesweeperIndicator.style.backgroundImage = 'url("games/minesweeper/guess.ico")';	
+						this.minesweeperIndicator.style.backgroundImage = `url("${this.imagesPath}guess.ico")`;
 					}
 
 					
@@ -223,7 +222,7 @@ class MineSweeper extends Window{
 						return;
 					}
 
-					this.minesweeperIndicator.style.backgroundImage = 'url("games/minesweeper/smile.ico")';
+					this.minesweeperIndicator.style.backgroundImage = `url("${this.imagesPath}smile.ico")`;
 
 				});
 
@@ -299,7 +298,7 @@ class MineSweeper extends Window{
 						
 						THIS.gameOver = true;
 						clearInterval(THIS.interval);
-						THIS.minesweeperIndicator.style.backgroundImage = 'url("games/minesweeper/fail.ico")';//change class instead
+						THIS.minesweeperIndicator.style.backgroundImage = `url("${THIS.imagesPath}fail.ico")`;//change class instead
 
 						//UPDATE ALL HIDDEN BOMBS AND MISSED BOMBS
 						const children = THIS.minesweeperPlay.children;
@@ -356,7 +355,7 @@ class MineSweeper extends Window{
 											neighbour.innerHTML =  cellValue2;
 											neighbour.classList.add('minesweeper-color'+cellValue2);
 										} else {
-											queue.push({row:rowD, col:colD})
+											queue.push({row:rowD, col:colD});
 										}
 										
 									}
@@ -383,7 +382,8 @@ class MineSweeper extends Window{
 
 						THIS.gameOver = true;
 						clearInterval(THIS.interval);
-						THIS.minesweeperIndicator.style.backgroundImage = 'url("games/minesweeper/success2.ico")';
+						THIS.minesweeperIndicator.style.backgroundImage = `url("${THIS.imagesPath}success2.ico")`;
+						
 						for (let i=0; i<THIS.H; i++) {
 							for (let j=0; j<THIS.W; j++) {
 								if (THIS.bombsGrid[i][j] === THIS.bombChar) {
@@ -446,7 +446,7 @@ class MineSweeper extends Window{
 		const row = +element.dataset.row;
 		const col = +element.dataset.col;
 		const neighbours = this.getAllNeighbours(row, col);
-		let totalBombs = 0
+		let totalBombs = 0;
 		for (const neighbour of neighbours) {
 			const neighbourIndex = neighbour.row * this.W + neighbour.col;
 			const cell = this.minesweeperPlay.children[neighbourIndex];
