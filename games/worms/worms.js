@@ -1,3 +1,74 @@
+/*
+const canvas = document.getElementById('canvas')
+const ctx = canvas.getContext('2d');
+
+console.log('start')
+H = canvas.height = 1000;
+W = canvas.width = 2000;
+*/
+G= 0.5;
+V = +0.1;
+//ctx.fillStyle = 'green'
+
+class Shell{
+	constructor(angle, power, startPoint, ctx){
+		angle = 90 - angle
+		console.log('%c' + angle + ' ' +  power + ' ' + V.toFixed(2), 'background:red;color:yellow;font-size:2em');
+		this.x = startPoint.x;
+		this.y = startPoint.y;
+		angle = angle * Math.PI / 180;
+		this.deltaX = power * Math.cos(angle);
+		this.deltaY = -power * Math.sin(angle);
+		this.ctx = ctx;
+		this.image = new Image();
+		this.image.src = 'games/worms/images/missle25.png';
+
+	}
+	move(){
+		//console.log(this.x, this.y)
+		this.ctx.clearRect(this.x,this.y,32,32);
+		//this.deltaX += V;
+		const prevX = this.x;
+		const prevY = this.y;
+		
+		this.x += this.deltaX;
+		this.deltaY += G;
+		this.y += this.deltaY;
+		const deltaAndleX = this.x - prevX;
+		const deltaAndleY = this.y - prevY;
+		
+		if (deltaAndleX == 0) {
+			ddd;
+		} else {
+			this.missleAngle = Math.atan(deltaAndleX / deltaAndleY) * 180 / Math.PI;
+		}
+		//console.log(this.x, this.y)
+		if (this.y < 0 || this.x>800 || this.x < 0) {//COLISION
+			//clearInterval(interval);
+			//sss;
+			//this.ctx.clearRect(0,0,800,800);
+			//shell = new Shell((Math.random() * 30 >>0)+45, (Math.random() * 30 >>0) + 30);
+			V = (0.5 - Math.random())*2;
+			//V = 0;
+			clearInterval(this.interval);
+		}
+	}
+	render(){
+		this.ctx.save();
+		this.ctx.translate(this.x, this.y);
+		this.ctx.rotate(this.missleAngle);
+		this.ctx.drawImage(this.image, 0, 0);
+		this.ctx.restore();
+	}
+	play(){
+		this.interval = setInterval(()=>{
+			this.move();
+			this.render();
+		}, 33);
+	}
+}
+
+
 class Worm {
     constructor(col, ctx, binaryLayout, pixelZoom, brick, orientation = 0){
         this.col = col;
@@ -12,6 +83,7 @@ class Worm {
         //this.image.src = `games/worms/images/worm${orientation?1:''}.png`;
         //this.image.src = `games/worms/images/worms${orientation?1:''}.ico`;
 		this.image.src = `games/worms/images/worms1.ico`;
+		
 		
 		
 		this.bazooka = new Image();
@@ -72,6 +144,8 @@ class Worm {
 		this.poweringUp = false;
 		console.log("FIRE");
 		this.render();
+		this.shell = new Shell(this.bazookaAngle, this.power, this.powerArray[0], this.ctx);
+		this.shell.play();
 	}
     adjustH(){
         for (let h=0; h<this.binaryLayout.length; h++) {
