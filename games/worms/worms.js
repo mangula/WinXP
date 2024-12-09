@@ -1,13 +1,90 @@
 class Worm {
-    constructor(row, ctx, binaryLayout, pixelZoom, orientation = 0){
-        this.row = row;
+    constructor(col, ctx, binaryLayout, pixelZoom, brick, orientation = 0){
+        this.col = col;
+        this.x = col * pixelZoom;
         this.ctx = ctx;
-        this.binaryLayout = this.binaryLayout;
+        this.binaryLayout = binaryLayout;
         this.pixelZoom = pixelZoom;
+        this.brick = brick;
         this.orientation = orientation;
+        this.adjustH();
+        this.image = new Image();
+        //this.image.src = `games/worms/images/worm${orientation?1:''}.png`;
+        //this.image.src = `games/worms/images/worms${orientation?1:''}.ico`;
+		this.image.src = `games/worms/images/worms1.ico`;
+		
+		
+		this.bazooka = new Image();
+        //this.bazooka.src = `games/worms/images/bazooka.png`;
+		this.bazooka.src = `games/worms/images/bazooka0-green32.png`;
+		
+		this.bazookaAngle = 45;
+		//this.adjustBazookaAngle();
+        //this.render();
+        this.image.addEventListener('load',()=>{
+			this.width = this.image.width;
+			this.height = this.image.height;
+			console.log('this.width', this.width)
+			console.log('this.width', this.height)
+            this.render()
+        });
+    }
+	adjustBazookaAngle(direction){
+		this.bazookaAngle -= direction * 10;
+		if (this.bazookaAngle > 90) {
+			this.bazookaAngle = 90;
+		} else if (this.bazookaAngle < 0) {
+			this.bazookaAngle = 0;
+		}
+	}
+    adjustH(){
+        for (let h=0; h<this.binaryLayout.length; h++) {
+            if (this.binaryLayout[h][this.col] == this.brick) {
+                this.row = h-1;
+                break;
+            }
+        }
     }
     render(){
-        
+        //console.log(this.row, this.col);
+        //console.log(this.row * this.pixelZoom, this.col * this.pixelZoom);
+        //console.log('ctx 333', this.ctx);
+		let x = this.col * this.pixelZoom - this.width / 2;
+		let y = this.row * this.pixelZoom - this.height / 1.5;
+		this.ctx.clearRect(x - 50, y - 50,100,100)
+		this.ctx.save();
+		this.ctx.scale(this.orientation?1:-1,1);
+        this.ctx.drawImage(this.image, this.orientation ? x : -x - 32, y);
+		this.ctx.restore();
+        //this.ctx.drawImage(this.bazooka, this.col * this.pixelZoom - this.width / 2, this.row * this.pixelZoom - this.height/1.5);
+		
+		this.ctx.save();
+		
+		//this.ctx.translate(x,y);
+		//x+=32/2 * 2;
+		x+=32/2 * 3.5 * (this.orientation ? 0.9: -0.35);
+		y+=32/2;
+		this.ctx.translate(x,y);
+		this.ctx.scale(this.orientation ? 1 : -1, 1)
+		const totalAngle = this.orientation ? (this.bazookaAngle + 90 + 180 ) : (this.bazookaAngle - 90);
+		this.ctx.rotate(totalAngle * Math.PI/180);
+		
+		
+		this.ctx.drawImage(
+			this.bazooka,
+		    -Math.sin(this.bazookaAngle *Math.PI / 180) * 30 - 5,
+		    -Math.cos(this.bazookaAngle *Math.PI / 180) * 40 - 10
+	    )
+		
+		this.ctx.restore();
+		return;
+		this.ctx.moveTo(x-50,y);
+		this.ctx.lineTo(x+50,y);
+		this.ctx.moveTo(x, y-50);
+		this.ctx.lineTo(x, y+50);
+		this.ctx.stroke();
+		// we’re done with the rotating so restore the unrotated context
+		
     }
 }
 
@@ -26,8 +103,8 @@ class Worms extends Window{
         this.programElement.setAttribute('id', 'worms-wrapper');
         this.canvas = document.createElement('CANVAS');
         this.canvas.setAttribute('id', 'worms-canvas');
+		this.canvas.style.position = 'relative';
         this.ctx = this.canvas.getContext('2d');
-        this.programElement.appendChild(this.canvas);
         
         this.canvasBackground = document.createElement('CANVAS');
         this.canvasBackground.setAttribute('id', 'worms-canvas-background');
@@ -36,7 +113,9 @@ class Worms extends Window{
         this.canvasBackground.style.top = 0;
         this.canvasBackground.style.left = 0;
         this.ctxBackground = this.canvasBackground.getContext('2d');
+		
         this.programElement.appendChild(this.canvasBackground);
+        this.programElement.appendChild(this.canvas);
         
 		const lastULElement = this.fileDropDownElement.querySelector('li:last-of-type');
         const difficultyMode = ['Beginner', 'Intermediate', 'Expert'];
@@ -61,8 +140,14 @@ class Worms extends Window{
         this.resizeCanvas();
         this.render();
         this.renderBackground();
-		this.bombChar = '*';
-		this.freeChar = ' ';
+		
+		this.setEventListeners();
+		
+		
+		this.bombChar = '*';//delete
+		this.freeChar = ' ';//delte
+		
+		this.myTurn = 1;
 		
         
         
@@ -126,7 +211,41 @@ class Worms extends Window{
 		this.init();
 		this.reset();
 	}
-    
+    setEventListeners(){
+		window.addEventListener('keydown', (event)=>{
+			if (this.myTurn && this.windowElement.classList.contains('focused')) {
+				console.log('event', event.key);
+				switch(event.key.toLowerCase()){
+					case 'arrowRight':
+					case 'd':
+					case 6:
+						this.worms[0].orientation = 1;
+						break;
+					case 'arrowLeft':
+					case 'a':
+					case 4:
+						this.worms[0].orientation = 0;
+						break;
+						
+					case 'arrowUp':
+					case 'w':
+					case 8:
+						this.worms[0].adjustBazookaAngle(1);
+						break;
+					case 'arrowUDown':
+					case 's':
+					case 2:
+						this.worms[0].adjustBazookaAngle(-1);
+						break;
+				}
+				
+				this.worms[0].render();
+			}
+		})
+		if (this.myTurn) {
+			
+		}
+	}
     render(){
         
     }
@@ -250,9 +369,11 @@ class Worms extends Window{
         //console.log(this.binaryLayout.map(a=>a.join('')).join('\n'))
         //sss;
         
+        console.log('ctx', this.ctx)
         switch(this.difficulty){
 			case 0:
-                this.worms = new Worm(2, this.ctx, this.binaryLayout, this.pixelZoom);
+                this.worms = [new Worm(2 * blockSize + 2, this.ctx, this.binaryLayout, this.pixelZoom, this.brick, 1)];
+				this.enemy = [new Worm(12 * blockSize + 2, this.ctx, this.binaryLayout, this.pixelZoom, this.brick)];
 				break;
 			case 1:
 				break;
