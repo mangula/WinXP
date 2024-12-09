@@ -140,6 +140,7 @@ function handleMouseDown(event){
 const windowPosition = {
 	minesweeper: 2 * 50,
 	tetris: 2.5 * 50,
+	worms: 3 * 50,
 };
 
 class Window{

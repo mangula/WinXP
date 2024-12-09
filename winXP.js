@@ -12,10 +12,12 @@ class WinXP{
 		this.winXPElement.appendChild(this.taskbar.taskbarElement);
 		this.minesweeperGame = new MineSweeper();
 		this.tetrisGame = new Tetris();
+		this.wormsGame = new Worms();
 
 		this.iconsList = [
 			'minesweeper',
-			'tetris'
+			'tetris',
+			'worms'
 		];
 
 		this.icons = [];
@@ -91,6 +93,13 @@ class WinXP{
 					this.minesweeperGame.focus();
 				} else {
 					this.minesweeperGame = new MineSweeper();
+				}
+			break;
+			case 'worms':
+				if (this.wormsGame) {
+					this.wormsGame.focus();
+				} else {
+					this.wormsGame = new Worms();
 				}
 			break;
 		}
