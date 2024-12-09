@@ -11,8 +11,11 @@ V = +0.1;
 //ctx.fillStyle = 'green'
 
 class Shell{
-	constructor(angle, power, startPoint, ctx){
-		angle = 90 - angle
+	constructor(angle, power, startPoint, ctx, orientation){
+		angle = orientation ? 90 - angle : angle;
+		if (orientation == 0) {
+			angle = -(90 - angle + 180);
+		}
 		console.log('%c' + angle + ' ' +  power + ' ' + V.toFixed(2), 'background:red;color:yellow;font-size:2em');
 		this.x = startPoint.x;
 		this.y = startPoint.y;
@@ -27,7 +30,7 @@ class Shell{
 	move(){
 		//console.log(this.x, this.y)
 		this.ctx.clearRect(this.x,this.y,32,32);
-		//this.deltaX += V;
+		this.deltaX += V;
 		const prevX = this.x;
 		const prevY = this.y;
 		
@@ -37,18 +40,15 @@ class Shell{
 		const deltaAndleX = this.x - prevX;
 		const deltaAndleY = this.y - prevY;
 		
-		if (deltaAndleX == 0) {
-			ddd;
-		} else {
-			this.missleAngle = Math.atan(deltaAndleX / deltaAndleY) * 180 / Math.PI;
-		}
+		this.missleAngle = deltaAndleX ? Math.atan(deltaAndleY / deltaAndleX) : 90;
+		
 		//console.log(this.x, this.y)
-		if (this.y < 0 || this.x>800 || this.x < 0) {//COLISION
+		if ( this.y >800 || this.x>800 || this.x < 0) {//COLISION
 			//clearInterval(interval);
 			//sss;
 			//this.ctx.clearRect(0,0,800,800);
 			//shell = new Shell((Math.random() * 30 >>0)+45, (Math.random() * 30 >>0) + 30);
-			V = (0.5 - Math.random())*2;
+			V = (0.5 - Math.random())*0.5;
 			//V = 0;
 			clearInterval(this.interval);
 		}
@@ -57,7 +57,7 @@ class Shell{
 		this.ctx.save();
 		this.ctx.translate(this.x, this.y);
 		this.ctx.rotate(this.missleAngle);
-		this.ctx.drawImage(this.image, 0, 0);
+		this.ctx.drawImage(this.image, -12.5, -12.5);
 		this.ctx.restore();
 	}
 	play(){
@@ -144,7 +144,7 @@ class Worm {
 		this.poweringUp = false;
 		console.log("FIRE");
 		this.render();
-		this.shell = new Shell(this.bazookaAngle, this.power, this.powerArray[0], this.ctx);
+		this.shell = new Shell(this.bazookaAngle, this.power, this.powerArray[0], this.ctx, this.orientation);
 		this.shell.play();
 	}
     adjustH(){
