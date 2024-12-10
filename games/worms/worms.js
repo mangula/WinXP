@@ -11,12 +11,9 @@ V = +0.1;
 //ctx.fillStyle = 'green'
 
 class Shell{
-	constructor(angle, power, startPoint, ctx, orientation){
-		angle = orientation ? 90 - angle : angle;
-		if (orientation == 0) {
-			angle = -(90 - angle + 180);
-		}
-		console.log('%c' + angle + ' ' +  power + ' ' + V.toFixed(2), 'background:red;color:yellow;font-size:2em');
+	constructor(angle, power, startPoint, ctx, orientation, binaryLayout, pixelZoom, mainGame){
+		angle = orientation ? 90 - angle : angle - 270;
+		//console.log('%c' + angle + ' ' +  power + ' ' + V.toFixed(2), 'background:red;color:yellow;font-size:2em');
 		this.x = startPoint.x;
 		this.y = startPoint.y;
 		angle = angle * Math.PI / 180;
@@ -25,6 +22,10 @@ class Shell{
 		this.ctx = ctx;
 		this.image = new Image();
 		this.image.src = 'games/worms/images/missle25.png';
+		this.binaryLayout = binaryLayout;
+		this.pixelZoom = pixelZoom;
+		this.mainGame = mainGame;
+		console.log('pixelZoom', pixelZoom)
 
 	}
 	move(){
@@ -64,7 +65,53 @@ class Shell{
 		this.interval = setInterval(()=>{
 			this.move();
 			this.render();
+			this.checkCollision();
 		}, 33);
+	}
+	checkCollision(){
+		const row = this.y / this.pixelZoom >> 0;
+		const col = this.x / this.pixelZoom >> 0;
+		//console.log(row, col)
+		if (this.binaryLayout[row]?.[col] == '*') {
+			clearInterval(this.interval);
+			//explode
+			const blastRadius = 10;
+			for (let h=-blastRadius; h<=blastRadius; h++) {
+				for (let w=-blastRadius; w<=blastRadius; w++) {
+					const cellRow = row + h;
+					const cellCol = col + w;
+					if ((cellCol - col)**2 + (cellRow - row)**2<=blastRadius**2) {
+						if(this.binaryLayout[cellRow]?.[cellCol] == '*') {
+							this.binaryLayout[cellRow][cellCol] = ' ';
+							//console.log(cellRow, cellCol);
+						}
+						
+					}
+				}
+			}
+			//console.log(this.binaryLayout.map(a=>a.join('')).join('\n'))
+			const limit = 5;
+			let blast = 1;
+			const interval = setInterval(()=>{
+				blast++;
+				const radius = blast / limit * blastRadius * this.pixelZoom;
+				const colorValue = 255/limit*blast>>0;
+				console.log('colorValue', colorValue);
+				this.ctx.beginPath();
+				this.ctx.fillStyle = "yellow";
+				this.ctx.moveTo(this.x + radius, this.y)
+				this.ctx.arc(this.x, this.y, radius, 0, Math.PI * 2);
+				this.ctx.fill();
+				this.ctx.closePath();
+			}, 33);
+			setTimeout(() => {
+				clearInterval(interval);
+				const radius = (blast +1) / limit * blastRadius * this.pixelZoom;
+				this.ctx.clearRect(this.x - radius, this.y - radius, radius*2, radius*2)
+				winXP.wormsGame.renderBackground();
+			}, (limit - 1) * 33)
+			
+		}
 	}
 }
 
@@ -144,7 +191,7 @@ class Worm {
 		this.poweringUp = false;
 		console.log("FIRE");
 		this.render();
-		this.shell = new Shell(this.bazookaAngle, this.power, this.powerArray[0], this.ctx, this.orientation);
+		this.shell = new Shell(this.bazookaAngle, this.power, this.powerArray[0], this.ctx, this.orientation, this.binaryLayout, this.pixelZoom, this);
 		this.shell.play();
 	}
     adjustH(){
@@ -243,7 +290,7 @@ class Worms extends Window{
 		this.difficulty = 0;
 
 		this.cellSize = 50;
-        this.pixelZoom = 10;//this.cellSize % this.pixelZoom === 0 !!!!!!!
+        this.pixelZoom = 5;//this.cellSize % this.pixelZoom === 0 !!!!!!!
 		this.dimm = 'px';
         this.brick = '*';
 		this.fire = ' ';
@@ -408,36 +455,55 @@ class Worms extends Window{
     renderBackground(){
         this.ctxBackground.clearRect(0, 0, this.W, this.H);
         this.pattern.addEventListener('load',()=>{
-            for (const h in this.layout) {
-                for (const w in this.layout[h]) {
-                    if (this.layout[h][w] == this.brick) {
-                        this.ctxBackground.drawImage(this.pattern, w * this.cellSize, h * this.cellSize);
-                    }
-                }
-            }
+    		this.drawMainPattern();        
             this.topPattern.addEventListener('load',()=>{
-                
-                for (const w in this.layout[0]) {
-                    for (const h in this.layout) {
-                        if (this.layout[h][w] == this.brick) {
-                            this.ctxBackground.drawImage(this.topPattern, w * this.cellSize, h * this.cellSize);
-                            break;
-                        }
-                    }
-                }
-                //HERE
-                //if(0)
-                
-                
-                
-                for (const {row, col} of this.originalLayoutArray) {
-                    if (this.binaryLayout[row][col] != this.brick) {
-                        this.ctxBackground.clearRect(col * this.pixelZoom, row * this.pixelZoom, this.pixelZoom, this.pixelZoom)
-                    }
-                }
+    			this.drawTopLayer();
+				this.eraseExploded();
             });
         })
+		this.drawMainPattern();
+		this.drawTopLayer();
+		this.eraseExploded();
     }
+	drawMainPattern(){
+		for (const h in this.layout) {
+			for (const w in this.layout[h]) {
+				if (this.layout[h][w] == this.brick) {
+					this.ctxBackground.drawImage(this.pattern, w * this.cellSize, h * this.cellSize);
+				}
+			}
+		}
+	}
+	drawTopLayer(){
+		for (const w in this.layout[0]) {
+			for (const h in this.layout) {
+				if (this.layout[h][w] == this.brick) {
+					this.ctxBackground.drawImage(this.topPattern, w * this.cellSize, h * this.cellSize);
+					break;
+				}
+			}
+		}
+	}
+	eraseExploded(){
+		//HERE
+		//if(0)
+		for (const w in this.binaryLayout[0]) {
+			for (const h in this.binaryLayout) {
+				if (this.binaryLayout[h][w] != this.brick) {
+					//this.ctxBackground.drawImage(this.topPattern, w * this.cellSize, h * this.cellSize);
+					this.ctxBackground.clearRect(w * this.pixelZoom, h * this.pixelZoom, this.pixelZoom, this.pixelZoom)
+					//break;
+				}
+			}
+		}
+
+		if(0)
+		for (const {row, col} of this.originalLayoutArray) {
+			if (this.binaryLayout[row][col] != this.brick) {
+				this.ctxBackground.clearRect(col * this.pixelZoom, row * this.pixelZoom, this.pixelZoom, this.pixelZoom)
+			}    
+		}
+	}
     resizeCanvas(){
         this.canvasBackground.height = this.canvas.height = this.H;
         this.canvasBackground.width = this.canvas.width = this.W;
