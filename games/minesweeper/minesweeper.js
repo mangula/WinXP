@@ -171,9 +171,13 @@ class MineSweeper extends Window{
 
 					for (let i=0, length = indicatorClasses.length; i < length; i++) {
 						if (this.classList.contains(indicatorClasses[i])) {
+							THIS.remainingBombs += [-1, 1, 0][i];
+							if (THIS.remainingBombs < 0) {
+								THIS.remainingBombs = 0;
+								return;
+							}
 							this.classList.remove(indicatorClasses[i]);
 							this.classList.add(indicatorClasses[(i + 1) % length]);
-							THIS.remainingBombs += [-1, 1, 0][i];
 							break;
 						}
 					}
