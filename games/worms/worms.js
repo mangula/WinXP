@@ -6,10 +6,19 @@ console.log('start')
 H = canvas.height = 1000;
 W = canvas.width = 2000;
 */
-G= 0.5;
-V = +0.1;
+G = 0.5;//Gravity - vertical influence
+V = +0.1;//Wind - horizontal influence
 //ctx.fillStyle = 'green'
+const preloadArray = [
+	'games/worms/images/explosion.png',
+	
+];
 
+preload = new Image();
+preload.src = 'games/worms/images/explosion.png';
+preload.addEventListener('load', ()=>{
+	console.log('LOADED')
+})
 class Shell{
 	constructor(angle, power, startPoint, ctx, orientation, binaryLayout, pixelZoom, mainGame){
 		angle = orientation ? 90 - angle : angle - 270;
@@ -25,7 +34,13 @@ class Shell{
 		this.image.addEventListener('load', ()=>{
 			this.imageH = this.image.height;
 			this.imageW = this.image.width;
-		})
+		});
+		
+		this.blastImage = preload;
+		this.blastImageH = this.blastImage.height;
+		this.blastImageW = this.blastImage.width;
+		console.log('LOADED2', this.blastImageH, this.blastImageW)
+		
 		this.binaryLayout = binaryLayout;
 		this.pixelZoom = pixelZoom;
 		this.mainGame = mainGame;
@@ -35,19 +50,20 @@ class Shell{
 	move(){
 		//console.log(this.x, this.y)
 		this.ctx.clearRect(this.x,this.y,32,32);
-		this.deltaX += V;
-		const prevX = this.x;
-		const prevY = this.y;
+		//this.deltaX += V;//wind effect
+		this.prevX = this.x;
+		this.prevY = this.y;
 		
 		this.x += this.deltaX;
 		this.deltaY += G;
 		this.y += this.deltaY;
-		const deltaAndleX = this.x - prevX;
-		const deltaAndleY = this.y - prevY;
-		
-		this.missleAngle = deltaAndleX ? Math.atan(deltaAndleY / deltaAndleX) : 90;
+		const deltaAndleX = this.x - this.prevX;
+		const deltaAndleY = this.y - this.prevY;
+		//console.log(this.x, this.y)
+		this.missleAngle = deltaAndleX ? Math.atan(deltaAndleY / deltaAndleX) : (deltaAndleY > 0 ? 90 : -90) * Math.PI / 180;
 		
 		//console.log(this.x, this.y)
+		//console.log(this.missleAngle);
 		if ( this.y >800 || this.x>800 || this.x < 0) {//COLISION
 			//clearInterval(interval);
 			//sss;
@@ -59,6 +75,7 @@ class Shell{
 		}
 	}
 	render(){
+		this.ctx.clearRect(this.prevX - this.imageW, this.prevY- this.imageH, this.imageW * 2, this.imageH * 2);
 		this.ctx.save();
 		this.ctx.translate(this.x, this.y);
 		this.ctx.rotate(this.missleAngle);
@@ -94,24 +111,53 @@ class Shell{
 				}
 			}
 			//console.log(this.binaryLayout.map(a=>a.join('')).join('\n'))
-			const limit = 5;
+			const limit = 25;
 			let blast = 0;
+			const X = this.x>>0;
+			const Y = this.y>>0;
+			console.log(this.x, this.y)
+			const nCols = 5;
+			const nRows = 5;
+
+			
+			const spriteWidth = this.blastImage.width;
+			const spriteHeight = this.blastImage.width;
+			const imageWidth = spriteWidth / nCols;
+			const imageHeight = spriteWidth / nRows;
+			const imageZoom = 0.9;
+			
 			const interval = setInterval(()=>{
-				blast++;
-				const radius = (blast+1) / limit * blastRadius * this.pixelZoom;
-				//const colorValue = 255/limit*blast>>0;
-				//console.log('colorValue', colorValue);
+				const imageRow = blast / nCols >> 0;
+				const imageCol = blast % nCols;
 				
-				this.ctx.fillStyle = "yellow";
-				this.ctx.moveTo(this.x + radius, this.y)
-				this.ctx.arc(this.x, this.y, radius, 0, Math.PI * 2);
-				this.ctx.fill();
+				blast++;
+				this.ctx.drawImage(
+					this.blastImage,
+					imageCol * imageWidth, imageRow * imageHeight + 1,
+					imageWidth, imageHeight,
+					X - imageHeight * imageZoom, Y - imageWidth * imageZoom,
+					imageWidth * imageZoom * 2, imageHeight * imageZoom * 2
+				);
 				
 			}, 33);
+			
+			const interval2 = setInterval(()=>{
+				return
+				this.ctx.drawImage(
+					this.blastImage,
+					imageCol * imageWidth, imageRow * imageHeight + 1,
+					imageWidth, imageHeight,
+					X - imageHeight, Y - renderHeight,
+					renderWidth, renderHeight
+				);
+				
+			}, 33);
+			
 			setTimeout(() => {
 				clearInterval(interval);
-				const radius = (blast +2) / limit * blastRadius * this.pixelZoom;
-				this.ctx.clearRect(this.x - radius, this.y - radius, radius*2, radius*2)
+				const radius = blastRadius * this.pixelZoom;
+				this.ctx.clearRect(X - radius, Y - radius, radius*2, radius*2)
+				this.ctx.clearRect(0,0,800,800)
 				winXP.wormsGame.renderBackground();
 			}, (limit) * 33)
 			
@@ -121,10 +167,11 @@ class Shell{
 
 
 class Worm {
-    constructor(col, ctx, binaryLayout, pixelZoom, brick, orientation = 0){
+    constructor(col, ctx, ctxWeapons, binaryLayout, pixelZoom, brick, orientation = 0){
         this.col = col;
         this.x = col * pixelZoom;
         this.ctx = ctx;
+        this.ctxWeapons = ctxWeapons;
         this.binaryLayout = binaryLayout;
         this.pixelZoom = pixelZoom;
         this.brick = brick;
@@ -166,9 +213,9 @@ class Worm {
 			return;
 		}
 		
-		console.log("POWERING UP");
+		//console.log("POWERING UP");
 		this.poweringUp = true;
-		this.power = 1;
+		this.power = 6;
 		this.renderTrail();
 		this.interval = setInterval(()=>{
 			this.power++;
@@ -178,16 +225,18 @@ class Worm {
 			}
 			this.renderTrail();
 			
-		}, 30);
+		}, 40);
 	}
 	renderTrail(){
-		console.log("POWER UP", this.power);
-		const startPoint = this.powerArray[0];
+		//console.log("POWER UP", this.power);
+		const startPoint = this.powerArray[6];
 		this.ctx.beginPath();
-		this.ctx.lineWidth = 10;
+		this.ctx.strokeStyle = this.power > this.powerArray.length / 2 ? this.power > this.powerArray.length * 5 / 6 ? 'Lime' : 'yellow' : 'Aqua';
+		this.ctx.lineWidth = 5;
 		this.ctx.moveTo(startPoint.x, startPoint.y);
 		const endPoint = this.powerArray[this.power];
 		this.ctx.lineTo(endPoint.x, endPoint.y);
+		this.ctx.lineCap = "round";
 		this.ctx.stroke();
 	}
 	fire(){
@@ -195,7 +244,7 @@ class Worm {
 		this.poweringUp = false;
 		console.log("FIRE");
 		this.render();
-		this.shell = new Shell(this.bazookaAngle, this.power, this.powerArray[0], this.ctx, this.orientation, this.binaryLayout, this.pixelZoom, this);
+		this.shell = new Shell(this.bazookaAngle, this.power, this.powerArray[0], this.ctxWeapons, this.orientation, this.binaryLayout, this.pixelZoom, this);
 		this.shell.play();
 	}
     adjustH(){
@@ -246,8 +295,8 @@ class Worm {
 		
 		y+=5;
 		
-		this.ctx.fillStyle = 'white';
-		this.powerArray = Array(30).fill(0);
+		this.ctx.fillStyle = 'Aqua';
+		this.powerArray = Array(31).fill(0);
 		const sinTotalAngle = Math.sin(totalAngle * Math.PI / 180);
 		const cosTotalAngle = Math.cos(totalAngle * Math.PI / 180);
 		for (const i in this.powerArray) {
@@ -255,7 +304,7 @@ class Worm {
 			const trailX = i * 3 * cosTotalAngle * (this.orientation ? 1 : -1) + x;
 			const trailY = i * 3 * sinTotalAngle + y;
 			this.powerArray[i] = {x:trailX, y:trailY};
-			if(i>3 && i%5 == 0){
+			if(i>3 && (i)%5 == 0){
 				this.ctx.beginPath();
 				this.ctx.moveTo(trailX + 2, trailY);
 				this.ctx.arc(trailX, trailY, 2, 0, 2 * Math.PI);
@@ -315,8 +364,17 @@ class Worms extends Window{
         this.canvasBackground.style.left = 0;
         this.ctxBackground = this.canvasBackground.getContext('2d');
 		
+        this.canvasWeapons = document.createElement('CANVAS');
+        this.canvasWeapons.setAttribute('id', 'worms-canvas-weapons');
+        //this.canvasBackground.style.position = 'absolute';
+        this.canvasWeapons.style.position = 'absolute';
+        this.canvasWeapons.style.top = 0;
+        this.canvasWeapons.style.left = 0;
+        this.ctxWeapons = this.canvasWeapons.getContext('2d');
+		
         this.programElement.appendChild(this.canvasBackground);
         this.programElement.appendChild(this.canvas);
+        this.programElement.appendChild(this.canvasWeapons);
         
 		const lastULElement = this.fileDropDownElement.querySelector('li:last-of-type');
         const difficultyMode = ['Beginner', 'Intermediate', 'Expert'];
@@ -337,6 +395,7 @@ class Worms extends Window{
         
         this.pattern = new Image();
         this.topPattern = new Image();
+		
         this.setDifficulty();
         this.resizeCanvas();
         this.render();
@@ -462,12 +521,12 @@ class Worms extends Window{
     		this.drawMainPattern();        
             this.topPattern.addEventListener('load',()=>{
     			this.drawTopLayer();
-				this.eraseExploded();
+				this.eraseExplodedCells();
             });
         })
 		this.drawMainPattern();
 		this.drawTopLayer();
-		this.eraseExploded();
+		this.eraseExplodedCells();
     }
 	drawMainPattern(){
 		for (const h in this.layout) {
@@ -488,7 +547,7 @@ class Worms extends Window{
 			}
 		}
 	}
-	eraseExploded(){
+	eraseExplodedCells(){
 		//HERE
 		//if(0)
 		for (const w in this.binaryLayout[0]) {
@@ -509,8 +568,8 @@ class Worms extends Window{
 		}
 	}
     resizeCanvas(){
-        this.canvasBackground.height = this.canvas.height = this.H;
-        this.canvasBackground.width = this.canvas.width = this.W;
+        this.canvasWeapons.height = this.canvasBackground.height = this.canvas.height = this.H;
+        this.canvasWeapons.width = this.canvasBackground.width = this.canvas.width = this.W;
     }
     getLayout(){
         return [
@@ -598,8 +657,8 @@ class Worms extends Window{
         console.log('ctx', this.ctx)
         switch(this.difficulty){
 			case 0:
-                this.worms = [new Worm(2 * blockSize + 2, this.ctx, this.binaryLayout, this.pixelZoom, this.brick, 1)];
-				this.enemy = [new Worm(12 * blockSize + 2, this.ctx, this.binaryLayout, this.pixelZoom, this.brick)];
+                this.worms = [new Worm(2 * blockSize + 2, this.ctx, this.ctxWeapons, this.binaryLayout, this.pixelZoom, this.brick, 1)];
+				this.enemy = [new Worm(12 * blockSize + 2, this.ctx, this.ctxWeapons, this.binaryLayout, this.pixelZoom, this.brick)];
 				break;
 			case 1:
 				break;
