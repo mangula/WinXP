@@ -22,6 +22,10 @@ class Shell{
 		this.ctx = ctx;
 		this.image = new Image();
 		this.image.src = 'games/worms/images/missle25.png';
+		this.image.addEventListener('load', ()=>{
+			this.imageH = this.image.height;
+			this.imageW = this.image.width;
+		})
 		this.binaryLayout = binaryLayout;
 		this.pixelZoom = pixelZoom;
 		this.mainGame = mainGame;
@@ -58,7 +62,7 @@ class Shell{
 		this.ctx.save();
 		this.ctx.translate(this.x, this.y);
 		this.ctx.rotate(this.missleAngle);
-		this.ctx.drawImage(this.image, -12.5, -12.5);
+		this.ctx.drawImage(this.image, -this.imageW/2, -this.imageH/2);
 		this.ctx.restore();
 	}
 	play(){
@@ -91,25 +95,25 @@ class Shell{
 			}
 			//console.log(this.binaryLayout.map(a=>a.join('')).join('\n'))
 			const limit = 5;
-			let blast = 1;
+			let blast = 0;
 			const interval = setInterval(()=>{
 				blast++;
-				const radius = blast / limit * blastRadius * this.pixelZoom;
-				const colorValue = 255/limit*blast>>0;
-				console.log('colorValue', colorValue);
-				this.ctx.beginPath();
+				const radius = (blast+1) / limit * blastRadius * this.pixelZoom;
+				//const colorValue = 255/limit*blast>>0;
+				//console.log('colorValue', colorValue);
+				
 				this.ctx.fillStyle = "yellow";
 				this.ctx.moveTo(this.x + radius, this.y)
 				this.ctx.arc(this.x, this.y, radius, 0, Math.PI * 2);
 				this.ctx.fill();
-				this.ctx.closePath();
+				
 			}, 33);
 			setTimeout(() => {
 				clearInterval(interval);
-				const radius = (blast +1) / limit * blastRadius * this.pixelZoom;
+				const radius = (blast +2) / limit * blastRadius * this.pixelZoom;
 				this.ctx.clearRect(this.x - radius, this.y - radius, radius*2, radius*2)
 				winXP.wormsGame.renderBackground();
-			}, (limit - 1) * 33)
+			}, (limit) * 33)
 			
 		}
 	}
