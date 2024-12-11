@@ -16,7 +16,7 @@ function setZindexes(){
 	}
 
 	document.querySelectorAll('.window').forEach(e=>{
-	    console.log(e.style.zIndex, e.querySelector('.window-sub-header').innerHTML)
+	    console.log('setZindexes',e.style.zIndex, e.querySelector('.window-sub-header').innerHTML)
 	})
 
 }

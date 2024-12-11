@@ -9,16 +9,33 @@ W = canvas.width = 2000;
 G = 0.5;//Gravity - vertical influence
 V = +0.1;//Wind - horizontal influence
 //ctx.fillStyle = 'green'
-const preloadAssets = {
-	explosion:'games/worms/images/explosion.png',
-	missle:'games/worms/images/missle25.png'
-};
+const preloadAssets = [
+	'games/worms/images/explosion.png',
+	'games/worms/images/missle25.png',
+	'games/worms/images/0.jpg',
+	'games/worms/images/1.jpg',
+	'games/worms/images/2.jpg',
+	'games/worms/images/worms1.ico',
+	'games/worms/images/bazooka0-green32.png',
+	'games/worms/images/pattern0.jpg',
+	'games/worms/images/pattern1.jpg',
+	'games/worms/images/pattern2.jpg',
+	'games/worms/images/topPattern0.jpg',
+	'games/worms/images/topPattern1.jpg',
+	'games/worms/images/topPattern2.jpg',
+	
+];
 
-preload = new Image();
-preload.src = 'games/worms/images/explosion.png';
-preload.addEventListener('load', ()=>{
-	console.log('LOADED')
-})
+let totalAssetsLength = preloadAssets.length;
+for (const src of preloadAssets) {
+	const preload = new Image();
+	preload.src = 'games/worms/images/explosion.png';
+	preload.addEventListener('load', ()=>{
+		if (--totalAssetsLength == 0) {
+			console.log('all assets preloaded')
+		}
+	});
+}
 class Shell{
 	constructor(angle, power, startPoint, ctx, orientation, layout, pixelZoom){
 		angle = orientation ? 90 - angle : angle - 270;
@@ -38,7 +55,8 @@ class Shell{
 			this.imageW = this.image.width;
 		});
 		
-		this.blastImage = preload;
+		this.blastImage = new Image();
+		this.blastImage.src = 'games/worms/images/explosion.png';
 		this.blastImageH = this.blastImage.height;
 		this.blastImageW = this.blastImage.width;
 		console.log('LOADED2', this.blastImageH, this.blastImageW)

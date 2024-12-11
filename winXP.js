@@ -10,9 +10,9 @@ class WinXP{
 		this.imagesFolder = 'images/';
 		this.taskbar = new Taskbar(this.imagesFolder);
 		this.winXPElement.appendChild(this.taskbar.taskbarElement);
-		this.minesweeperGame = new MineSweeper();
-		this.tetrisGame = new Tetris();
-		this.wormsGame = new Worms();
+		//this.minesweeperGame = new MineSweeper();
+		//this.tetrisGame = new Tetris();
+		//this.wormsGame = new Worms();
 
 		this.iconsList = [
 			'minesweeper',

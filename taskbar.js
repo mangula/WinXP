@@ -84,7 +84,9 @@ class Taskbar{
 		const socialLinks = [
 			{image:'social-facebook-icon.png', name:'facebook', link:'https://www.facebook.com/misatheface1'},
 			{image:'codingame.jpg', name:'codingame', link:'https://www.codingame.com/profile/228f67aeb45255c7de13fe03b1f0a8458693901'},
-			{image:'linkedin-icon.png', name:'linkedin', link:'https://www.linkedin.com/in/milosrepic/'}
+			{image:'linkedin-icon.png', name:'linkedin', link:'https://www.linkedin.com/in/milosrepic/'},
+			{image:'github.png', name:'github', link:'https://github.com/mangula/WinXP/'}
+			
 		];
 
 		for (const socialLink of socialLinks) {
