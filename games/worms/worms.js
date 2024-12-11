@@ -20,7 +20,7 @@ preload.addEventListener('load', ()=>{
 	console.log('LOADED')
 })
 class Shell{
-	constructor(angle, power, startPoint, ctx, orientation, binaryLayout, pixelZoom, mainGame){
+	constructor(angle, power, startPoint, ctx, orientation, layout, pixelZoom, mainGame){
 		angle = orientation ? 90 - angle : angle - 270;
 		//console.log('%c' + angle + ' ' +  power + ' ' + V.toFixed(2), 'background:red;color:yellow;font-size:2em');
 		this.x = startPoint.x;
@@ -41,7 +41,7 @@ class Shell{
 		this.blastImageW = this.blastImage.width;
 		console.log('LOADED2', this.blastImageH, this.blastImageW)
 		
-		this.binaryLayout = binaryLayout;
+		this.layout = layout;
 		this.pixelZoom = pixelZoom;
 		this.mainGame = mainGame;
 		console.log('pixelZoom', pixelZoom)
@@ -93,7 +93,7 @@ class Shell{
 		const row = this.y / this.pixelZoom >> 0;
 		const col = this.x / this.pixelZoom >> 0;
 		//console.log(row, col)
-		if (this.binaryLayout[row]?.[col] == '*') {
+		if (this.layout[row]?.[col] == '*') {
 			clearInterval(this.interval);
 			//explode
 			const blastRadius = 10;
@@ -102,15 +102,15 @@ class Shell{
 					const cellRow = row + h;
 					const cellCol = col + w;
 					if ((cellCol - col)**2 + (cellRow - row)**2<=blastRadius**2) {
-						if(this.binaryLayout[cellRow]?.[cellCol] == '*') {
-							this.binaryLayout[cellRow][cellCol] = ' ';
+						if(this.layout[cellRow]?.[cellCol] == '*') {
+							this.layout[cellRow][cellCol] = ' ';
 							//console.log(cellRow, cellCol);
 						}
 						
 					}
 				}
 			}
-			//console.log(this.binaryLayout.map(a=>a.join('')).join('\n'))
+			//console.log(this.layout.map(a=>a.join('')).join('\n'))
 			const limit = 25;
 			let blast = 0;
 			const X = this.x>>0;
@@ -158,13 +158,13 @@ class Shell{
 
 
 class Worm {
-    constructor(col, ctx, ctxWeapons, binaryLayout, pixelZoom, brick, orientation = 0){
+    constructor(col, ctx, ctxWeapons, layout, pixelZoom, brick, orientation = 0){
 		this.damage = 100;
         this.col = col;
         this.x = col * pixelZoom;
         this.ctx = ctx;
         this.ctxWeapons = ctxWeapons;
-        this.binaryLayout = binaryLayout;
+        this.layout = layout;
         this.pixelZoom = pixelZoom;
         this.brick = brick;
         this.orientation = orientation;
@@ -213,20 +213,20 @@ class Worm {
 		
 	}
 	checkDrop(){
-		this.binaryLayout[this.row][this.col] = ' ';
-		console.log(this.binaryLayout.map(a=>a.join(' ').slice(0,100)).join('\n'))
+		this.layout[this.row][this.col] = ' ';
+		console.log(this.layout.map(a=>a.join(' ').slice(0,100)).join('\n'))
 		
 		console.log(this.row, this.col)
 			let targetRow;
 			for(let h=1; ;h++){
 				try{
-					if(this.binaryLayout[this.row + h][this.col] == this.brick){
+					if(this.layout[this.row + h][this.col] == this.brick){
 						targetRow = this.row + h-1;
 						console.log('%c land ' + h + ' ' + targetRow, 'color:red;background:yellow;font-size:3em');
 						break;
 					}
 				} catch(e){
-					targetRow = this.binaryLayout.length + this.pixelZoom * 10;
+					targetRow = this.layout.length + this.pixelZoom * 10;
 					console.log('%cexception', 'color:red;background:yellow;text-size:3em');
 					this.damage = 0;
 					break;
@@ -323,12 +323,12 @@ class Worm {
 		//console.log("FIRE");
 		this.active = 0;
 		this.render();
-		this.shell = new Shell(this.bazookaAngle, this.power, this.powerArray[0], this.ctxWeapons, this.orientation, this.binaryLayout, this.pixelZoom, this);
+		this.shell = new Shell(this.bazookaAngle, this.power, this.powerArray[0], this.ctxWeapons, this.orientation, this.layout, this.pixelZoom, this);
 		this.shell.play();
 	}
     adjustH(){
-        for (let h=0; h<this.binaryLayout.length; h++) {
-            if (this.binaryLayout[h][this.col] == this.brick) {
+        for (let h=0; h<this.layout.length; h++) {
+            if (this.layout[h][this.col] == this.brick) {
                 this.row = h-1;
         		this.y = this.row * this.pixelZoom;
                 break;
@@ -427,8 +427,8 @@ class Worm {
 		// we’re done with the rotating so restore the unrotated context
 		
     }
-	play(binaryLayout, enemy) {
-		//console.log(binaryLayout.map(a=>a.join(' ').slice(100)).join('\n'));
+	play(layout, enemy) {
+		//console.log(layout.map(a=>a.join(' ').slice(100)).join('\n'));
 		console.log(enemy)
 		
 		
@@ -440,7 +440,7 @@ class Worm {
 		
 		console.log(power, angle, direction);
 		console.log(X,Y);
-		this.shell = new Shell(angle, power, this.powerArray[0], this.ctxWeapons, orientation, this.binaryLayout, this.pixelZoom, this);
+		this.shell = new Shell(angle, power, this.powerArray[0], this.ctxWeapons, orientation, this.layout, this.pixelZoom, this);
 		this.shel.play();
 		
 		//this.simulate();
@@ -651,18 +651,18 @@ class Worms extends Window{
 		this.eraseExplodedCells();
     }
 	drawMainPattern(){
-		for (const h in this.layout) {
-			for (const w in this.layout[h]) {
-				if (this.layout[h][w] == this.brick) {
+		for (const h in this.basicLayout) {
+			for (const w in this.basicLayout[h]) {
+				if (this.basicLayout[h][w] == this.brick) {
 					this.ctxBackground.drawImage(this.pattern, w * this.cellSize, h * this.cellSize);
 				}
 			}
 		}
 	}
 	drawTopLayer(){
-		for (const w in this.layout[0]) {
-			for (const h in this.layout) {
-				if (this.layout[h][w] == this.brick) {
+		for (const w in this.basicLayout[0]) {
+			for (const h in this.basicLayout) {
+				if (this.basicLayout[h][w] == this.brick) {
 					this.ctxBackground.drawImage(this.topPattern, w * this.cellSize, h * this.cellSize);
 					break;
 				}
@@ -672,9 +672,9 @@ class Worms extends Window{
 	eraseExplodedCells(){
 		//HERE
 		//if(0)
-		for (const w in this.binaryLayout[0]) {
-			for (const h in this.binaryLayout) {
-				if (this.binaryLayout[h][w] != this.brick) {
+		for (const w in this.layout[0]) {
+			for (const h in this.layout) {
+				if (this.layout[h][w] != this.brick) {
 					//this.ctxBackground.drawImage(this.topPattern, w * this.cellSize, h * this.cellSize);
 					this.ctxBackground.clearRect(w * this.pixelZoom, h * this.pixelZoom, this.pixelZoom, this.pixelZoom)
 					//break;
@@ -684,7 +684,7 @@ class Worms extends Window{
 
 		if(0)
 		for (const {row, col} of this.originalLayoutArray) {
-			if (this.binaryLayout[row][col] != this.brick) {
+			if (this.layout[row][col] != this.brick) {
 				this.ctxBackground.clearRect(col * this.pixelZoom, row * this.pixelZoom, this.pixelZoom, this.pixelZoom)
 			}    
 		}
@@ -731,7 +731,7 @@ class Worms extends Window{
 		}
 	}
 	playEnemy(){
-		this.enemy[0].play(this.binaryLayout, this.worms);
+		this.enemy[0].play(this.layout, this.worms);
 	}
 
 	clearAllIntervals(){
@@ -745,54 +745,54 @@ class Worms extends Window{
 	setDifficulty(){
 		
         
-        this.layout = this.getLayout();
-        this.H = this.cellSize * this.layout.length;
-        this.W = this.cellSize * this.layout[0].length;
+        this.basicLayout = this.getLayout();
+        this.H = this.cellSize * this.basicLayout.length;
+        this.W = this.cellSize * this.basicLayout[0].length;
         
         const blockSize = this.cellSize / this.pixelZoom;
-        this.binaryH = this.layout.length * blockSize;
-        this.binaryW = this.layout[0].length * blockSize;
+        this.binaryH = this.basicLayout.length * blockSize;
+        this.binaryW = this.basicLayout[0].length * blockSize;
         
-        this.binaryLayout = Array(this.layout.length * blockSize).fill(1).map((_,h)=>{
+        this.layout = Array(this.basicLayout.length * blockSize).fill(1).map((_,h)=>{
             const H = h/blockSize>>0;
-            return Array(this.layout[0].length).fill(1).map((_,w)=>{
-                return (this.layout[H][w]).repeat(blockSize).split('');
+            return Array(this.basicLayout[0].length).fill(1).map((_,w)=>{
+                return (this.basicLayout[H][w]).repeat(blockSize).split('');
             }).flat(1);
         });
 
         this.originalLayoutArray =
-            this.binaryLayout.map(
+            this.layout.map(
             (line,h)=>
                 line.map((element, w)=>{
                     return {row:h, col:w};
                 })
-            ).flat(1).filter(cell=>this.binaryLayout[cell.row][cell.col] != this.brick);
+            ).flat(1).filter(cell=>this.layout[cell.row][cell.col] != this.brick);
         //console.log(this.originalLayoutArray.length);
         
         //sss;
         /*for (let i=0; i<100; i++) {
-            this.binaryLayout[Math.random() * this.binaryH >> 0][Math.random() * this.binaryW >> 0] = ' ';
+            this.layout[Math.random() * this.binaryH >> 0][Math.random() * this.binaryW >> 0] = ' ';
         }
         
         
         this.originalLayoutArray =
-            this.binaryLayout.map(
+            this.layout.map(
             (line,h)=>
                 line.map((element, w)=>{
                     return {row:h, col:w};
                 })
-            ).flat(1).filter(cell=>this.binaryLayout[cell.row][cell.col] != this.brick);
+            ).flat(1).filter(cell=>this.layout[cell.row][cell.col] != this.brick);
             
         console.log(this.originalLayoutArray.length);*/
-        //console.log(this.binaryLayout.map(a=>a.join('')).join('\n'))
+        //console.log(this.layout.map(a=>a.join('')).join('\n'))
         //sss;
         
         console.log('ctx', this.ctx)
         switch(this.difficulty){
 			case 0:
-                this.worms = [new Worm(2 * blockSize + 2, this.ctx, this.ctxWeapons, this.binaryLayout, this.pixelZoom, this.brick, 1)];
+                this.worms = [new Worm(2 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick, 1)];
 				this.worms[0].activate();
-				this.enemy = [new Worm(12 * blockSize + 2, this.ctx, this.ctxWeapons, this.binaryLayout, this.pixelZoom, this.brick)];
+				this.enemy = [new Worm(12 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick)];
 				break;
 			case 1:
 				break;
