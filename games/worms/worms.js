@@ -622,23 +622,23 @@ class Worms extends Window{
 				console.log('event', event.key, this.wormIndex);
 				const worm = this.worms[this.wormIndex];
 				switch(event.key.toLowerCase()){
-					case 'arrowRight':
+					case 'arrowright':
 					case 'd':
 					case 6:
 						worm.orientation = 1;
 						break;
-					case 'arrowLeft':
+					case 'arrowleft':
 					case 'a':
 					case 4:
 						worm.orientation = 0;
 						break;
 						
-					case 'arrowUp':
+					case 'arrowup':
 					case 'w':
 					case 8:
 						worm.adjustBazookaAngle(1);
 						break;
-					case 'arrowUDown':
+					case 'arrowdown':
 					case 's':
 					case 2:
 						worm.adjustBazookaAngle(-1);
