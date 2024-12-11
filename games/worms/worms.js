@@ -191,33 +191,90 @@ class Worm {
             this.render()
         });
     }
+	activate() {
+		this.myTurn = 1;	
+		this.active = 1;
+	}
+	
 	checkDamage(X, Y, blastRadius) {
 		
 		const distance = Math.round(((this.x - X) ** 2 + (this.y - Y) ** 2)**0.5);
 		
 		console.log('%c' + this.x + ' ' + this.y+ ' ' + blastRadius+ ' ' + X+ ' ' + Y+ ' ' + distance, 'color:yellow;background:red;font-size:2em')
 		
-		blastRadius -= distance;
-		if (blastRadius < 0) {
+		this.blastRadius = blastRadius - distance;
+		if (this.blastRadius < 0) {
 			return;
 		}
 		//check drop
+		this.checkDrop();
+		
+		//this.animateDamage();
+		
+	}
+	checkDrop(){
+		this.binaryLayout[this.row][this.col] = ' ';
+		console.log(this.binaryLayout.map(a=>a.join(' ').slice(0,100)).join('\n'))
+		
+		console.log(this.row, this.col)
+			let targetRow;
+			for(let h=1; ;h++){
+				try{
+					if(this.binaryLayout[this.row + h][this.col] == this.brick){
+						targetRow = this.row + h-1;
+						console.log('%c land ' + h + ' ' + targetRow, 'color:red;background:yellow;font-size:3em');
+						break;
+					}
+				} catch(e){
+					targetRow = this.binaryLayout.length + this.pixelZoom * 10;
+					console.log('%cexception', 'color:red;background:yellow;text-size:3em');
+					this.damage = 0;
+					break;
+				}
+			}
+			let G= 0;
+			this.y = this.row * this.pixelZoom;
+			console.log('start drop',this.y, this.row);
+			const interval = setInterval(_=>{
+				G+=.5;
+				this.y += G;
+				this.row = this.y / this.pixelZoom >> 0;
+				if (this.row >= targetRow) {
+					this.row = targetRow;
+					clearInterval(interval);
+					this.animateDamage();
+				}
+				this.render();
+			}, 33);
+		
+	}
+	animateDamage(){
+		console.log('ANIMATE DAMAGE')
 		const originalDamage = this.damage;
-		const targetDamage = originalDamage - blastRadius;
+		let targetDamage = originalDamage - this.blastRadius;
+		if (targetDamage < 0) {
+			targetDamage = 0;
+			this.damage = 0;
+		}
 		const limit = 10;
 		let counter = limit;
+		
 		
 		this.damageInterval = setInterval(()=>{
 			counter--;
 			if (counter == 0) {
 				clearInterval(this.damageInterval);
+				setTimeout(()=>{
+					this.myTurn = 0;
+					this.render();
+					winXP.wormsGame.nextTurn();
+				}, 500)
 			}
 			this.damage = targetDamage + Math.round((originalDamage - targetDamage) * counter / limit);
 			
 			//console.log(newDamage);
 			this.render();
 		},100);
-		
 	}
 	adjustBazookaAngle(direction){
 		this.bazookaAngle -= direction * 10;
@@ -229,11 +286,11 @@ class Worm {
 	}
 	powerUp(){
 		
-		if (this.poweringUp){
+		if (this.poweringUp || this.active != 1){
 			return;
 		}
 		
-		//console.log("POWERING UP");
+		console.log("POWERING UP");
 		this.poweringUp = true;
 		this.power = 6;
 		this.renderTrail();
@@ -241,6 +298,7 @@ class Worm {
 			this.power++;
 			if (this.power == this.powerArray.length) {
 				this.fire();
+				clearInterval(this.interval);
 				return;
 			}
 			this.renderTrail();
@@ -261,8 +319,9 @@ class Worm {
 	}
 	fire(){
 		clearInterval(this.interval);
-		this.poweringUp = false;
-		console.log("FIRE");
+		//this.poweringUp = false;
+		//console.log("FIRE");
+		this.active = 0;
 		this.render();
 		this.shell = new Shell(this.bazookaAngle, this.power, this.powerArray[0], this.ctxWeapons, this.orientation, this.binaryLayout, this.pixelZoom, this);
 		this.shell.play();
@@ -281,7 +340,7 @@ class Worm {
         //console.log(this.row * this.pixelZoom, this.col * this.pixelZoom);
         //console.log('ctx 333', this.ctx);
 		let x = this.col * this.pixelZoom - this.width / 2;
-		let y = this.row * this.pixelZoom - this.height / 1.5;
+		let y = this.row * this.pixelZoom - this.height / 1.2;
 		this.ctx.clearRect(x - 100, y - 100,300,200)
 		this.ctx.save();
 		this.ctx.scale(this.orientation?1:-1,1);
@@ -293,7 +352,7 @@ class Worm {
 		this.ctx.save();
 		this.ctx.font = '12px Arial';
 		this.ctx.fillStyle = 'black';
-		this.ctx.fillText(this.damage, x+5 + (this.damage<100?this.damage<10?10:5:0),y-8);
+		this.ctx.fillText(this.damage, x + 20 - 5 * this.damage.toString().length, y - 8);
 		this.ctx.restore();
 		if (this.myTurn != 1) {
 			return;
@@ -320,7 +379,9 @@ class Worm {
 		    deltaY
 	    )
 		this.ctx.restore();
-		
+		if (this.active != 1) {
+			return;
+		}
 		x-=32/2 * 3.5 * (this.orientation ? e: -0.35);
 		x += 16;
 		
@@ -366,6 +427,30 @@ class Worm {
 		// we’re done with the rotating so restore the unrotated context
 		
     }
+	play(binaryLayout, enemy) {
+		//console.log(binaryLayout.map(a=>a.join(' ').slice(100)).join('\n'));
+		console.log(enemy)
+		
+		
+		const power = Math.random() * 31 >> 0;
+		const angle = Math.random() * 91 >> 0;
+		const orientation = Math.random() < 0.5 ? 1 : -1;
+		const X = this.x;
+		const Y = this.y;
+		
+		console.log(power, angle, direction);
+		console.log(X,Y);
+		this.shell = new Shell(angle, power, this.powerArray[0], this.ctxWeapons, orientation, this.binaryLayout, this.pixelZoom, this);
+		this.shel.play();
+		
+		//this.simulate();
+		for (;;) {
+			
+			break;
+			
+			
+		}
+	}
 }
 
 class Worms extends Window{
@@ -438,7 +523,7 @@ class Worms extends Window{
 		this.bombChar = '*';//delete
 		this.freeChar = ' ';//delte
 		
-		this.myTurn = 1; //this.worms.some(a=>a.myturn);
+		this.wormIndex = 0; //this.worms.some(a=>a.myturn);
 	
         	
         
@@ -504,32 +589,33 @@ class Worms extends Window{
 	}
     setEventListeners(){
 		window.addEventListener('keydown', (event)=>{
-			if (this.myTurn && this.windowElement.classList.contains('focused')) {
-				//console.log('event', event.key);
+			if (~this.wormIndex && this.worms[this.wormIndex].active && this.windowElement.classList.contains('focused')) {
+				console.log('event', event.key, this.wormIndex);
+				const worm = this.worms[this.wormIndex];
 				switch(event.key.toLowerCase()){
 					case 'arrowRight':
 					case 'd':
 					case 6:
-						this.worms[0].orientation = 1;
+						worm.orientation = 1;
 						break;
 					case 'arrowLeft':
 					case 'a':
 					case 4:
-						this.worms[0].orientation = 0;
+						worm.orientation = 0;
 						break;
 						
 					case 'arrowUp':
 					case 'w':
 					case 8:
-						this.worms[0].adjustBazookaAngle(1);
+						worm.adjustBazookaAngle(1);
 						break;
 					case 'arrowUDown':
 					case 's':
 					case 2:
-						this.worms[0].adjustBazookaAngle(-1);
+						worm.adjustBazookaAngle(-1);
 						break;
 					case this.fire:
-						this.worms[0].powerUp();
+						worm.powerUp();
 						return; // not to render
 				}
 				
@@ -538,8 +624,8 @@ class Worms extends Window{
 		})
 		
 		window.addEventListener('keyup', (event)=>{
-			if (event.key == this.fire) {
-				this.worms[0].fire();
+			if (event.key == this.fire && ~this.wormIndex && this.worms[this.wormIndex].active) {
+				this.worms[this.wormIndex].fire();
 			}
 		});
 	}
@@ -636,6 +722,17 @@ class Worms extends Window{
 			}
 		},1000);
 	}
+	nextTurn(){
+		if (~this.wormIndex) {
+			this.wormIndex = -1;
+			this.playEnemy();
+		} else {
+			this.wormIndex = 0;
+		}
+	}
+	playEnemy(){
+		this.enemy[0].play(this.binaryLayout, this.worms);
+	}
 
 	clearAllIntervals(){
 		clearInterval(this.interval);
@@ -694,7 +791,7 @@ class Worms extends Window{
         switch(this.difficulty){
 			case 0:
                 this.worms = [new Worm(2 * blockSize + 2, this.ctx, this.ctxWeapons, this.binaryLayout, this.pixelZoom, this.brick, 1)];
-				this.worms[0].myTurn = 1;
+				this.worms[0].activate();
 				this.enemy = [new Worm(12 * blockSize + 2, this.ctx, this.ctxWeapons, this.binaryLayout, this.pixelZoom, this.brick)];
 				break;
 			case 1:
