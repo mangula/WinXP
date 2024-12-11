@@ -65,7 +65,7 @@ class Shell{
 		
 		//console.log(this.x, this.y)
 		//console.log(this.missleAngle);
-		if ( this.y >800 || this.x>800 || this.x < 0) {//COLISION
+		if ( this.y >800 || this.x>800 || this.x < -100) {//COLISION
 			//clearInterval(interval);
 			//sss;
 			//this.ctx.clearRect(0,0,800,800);
@@ -82,7 +82,7 @@ class Shell{
 		console.log('%cEND TURN', 'color:yellow;background:blue;font-size:2em')
 		
 		clearInterval(this.interval);
-		winXP.wormsGame.checkTotalDamage();
+		winXP.wormsGame.checkTotalDamage(this.x, this.y, 0);
 		return;
 		//winXP.wormsGame.nextTurn();
 	}
@@ -318,7 +318,7 @@ class Worm {
 		}
 	}
 	powerUp(){
-		
+		console.log('power up', this.poweringUp, this.active)
 		if (this.poweringUp || this.active != 1){
 			return;
 		}
@@ -352,6 +352,7 @@ class Worm {
 	}
 	fire(){
 		clearInterval(this.interval);
+		this.poweringUp = 0;
 		//this.poweringUp = false;
 		//console.log("FIRE");
 		this.active = 0;
@@ -415,7 +416,7 @@ class Worm {
 		if (this.active != 1) {
 			return;
 		}
-		x-=32/2 * 3.5 * (this.orientation ? e: -0.35);
+		x -= 32/2 * 3.5 * (this.orientation ? e: -0.35);
 		x += 16;
 		
 		y+=5;
@@ -471,27 +472,52 @@ class Worm {
 		
 		
 		orientation = 0;*/
-		
-		const power = Math.random() * 31 >> 0;
-		const angle = Math.random() * 91 >> 0;
+		this.myTurn = 1;
+		const maxAngle = 90;
+		const angleIncrement = 15;
+		const power = (Math.random() * 16 >> 0) + 15;
+		const angle = (Math.random() * (maxAngle/angleIncrement + 1) >> 0) * angleIncrement;
+		this.bazookaAngle = 90;
 		let orientation = Math.random() < 0.5 ? 1 : 0;
-		const X = this.x;
-		const Y = this.y;
+		orientation = 0;
+		let X = this.col * this.pixelZoom - this.width / 2;
+		let Y = this.row * this.pixelZoom - this.height / 1.2;
+		const e=0.92;
+		X+=32/2 * 3.5 * (this.orientation ? e: -0.35);
+		Y+=32/2;
+		X -= 32/2 * 3.5 * (this.orientation ? e: -0.35);
+		X += 16;
+		Y+=5;
 		
 		console.log(power, angle, orientation);
 		console.log(X,Y);
 		
+		console.log('%cTARGET ANGLE ' + angle + ' ' + power, 'color:white;background:red;font-size:2em')
 		this.shell = new Shell(angle, power, {x:X, y:Y}, this.ctxWeapons, orientation, this.layout, this.pixelZoom);
 		this.shell.simulate();//TODO
 		this.orientation = orientation;
 		
 		this.render();
+		const interval = setInterval(()=>{
+			
+			const angleDiff = angle - this.bazookaAngle;
+			console.log('this.bazookaAngle', this.bazookaAngle)
+			if (angleDiff == 0) {
+				clearInterval(interval);
+				setTimeout(_=>{
+					this.shell.play();
+				},100);
+			}
+			this.bazookaAngle += 15 * (angleDiff > 0 ? 1:-1);
+			//console.groupCollapse
+			this.render();	
+		}, 100);
+		return;
+		
 		//ssss;
 		//setInterval();
 		
-		setTimeout(_=>{
-			this.shell.play();
-		},1000);
+		
 		
 		//this.simulate();
 		for (;;) {
@@ -680,7 +706,7 @@ class Worms extends Window{
 		});
 	}
 	checkTotalDamage(X, Y, blastRadius){
-		console.log('%ccheckTotalDamage', 'color:black; background:lime; font-size:2em')
+		console.log('%ccheckTotalDamage ' + X + ' ' + Y + ' ' + blastRadius, 'color:black; background:lime; font-size:2em')
 		const allWorms = [this.worms,this.enemy].flat(1);
 		for (const worm of allWorms){
 			worm.checkDamage(X,Y,blastRadius);
@@ -693,6 +719,7 @@ class Worms extends Window{
 			if (allWorms.every(a=>a.damageChecked == 1)) {
 				clearInterval(interval);
 				setTimeout(()=>{
+					allWorms.forEach(a=>{a.active = 0; a.myTurn=0;a.render()});
 					winXP.wormsGame.nextTurn();	
 				}, 1000);
 				
