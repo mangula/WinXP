@@ -23,6 +23,8 @@ class Shell{
 	constructor(angle, power, startPoint, ctx, orientation, layout, pixelZoom){
 		angle = orientation ? 90 - angle : angle - 270;
 		//console.log('%c' + angle + ' ' +  power + ' ' + V.toFixed(2), 'background:red;color:yellow;font-size:2em');
+		this.orientation = orientation;
+		console.log('ORIENTATION', orientation)
 		this.x = startPoint.x;
 		this.y = startPoint.y;
 		angle = angle * Math.PI / 180;
@@ -71,6 +73,8 @@ class Shell{
 			V = (0.5 - Math.random())*0.5;
 			//V = 0
 			this.endTurn();
+			//winXP.wormsGame.nextTurn();
+			//winXP.wormsGame.checkTotalDamage();
 		}
 		
 	}
@@ -78,14 +82,16 @@ class Shell{
 		console.log('%cEND TURN', 'color:yellow;background:blue;font-size:2em')
 		
 		clearInterval(this.interval);
+		winXP.wormsGame.checkTotalDamage();
 		return;
-		winXP.wormsGame.nextTurn();
+		//winXP.wormsGame.nextTurn();
 	}
 	render(){
 		this.ctx.clearRect(this.prevX - this.imageW, this.prevY- this.imageH, this.imageW * 2, this.imageH * 2);
 		this.ctx.save();
 		this.ctx.translate(this.x, this.y);
 		this.ctx.rotate(this.missleAngle);
+		this.ctx.scale(this.orientation ? 1:-1, 1)
 		this.ctx.drawImage(this.image, -this.imageW/2, -this.imageH/2);
 		this.ctx.restore();
 	}
@@ -459,10 +465,16 @@ class Worm {
 		console.log(enemy)
 		
 		
-		const power = 30 || Math.random() * 31 >> 0;
+		/*const power = 30 || Math.random() * 31 >> 0;
 		const angle = 90 || Math.random() * 91 >> 0;
 		let orientation = -1 || Math.random() < 0.5 ? 1 : 0;
-		orientation = 0;
+		
+		
+		orientation = 0;*/
+		
+		const power = Math.random() * 31 >> 0;
+		const angle = Math.random() * 91 >> 0;
+		let orientation = Math.random() < 0.5 ? 1 : 0;
 		const X = this.x;
 		const Y = this.y;
 		
