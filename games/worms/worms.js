@@ -65,7 +65,7 @@ class Shell{
 		
 		//console.log(this.x, this.y)
 		//console.log(this.missleAngle);
-		if ( this.y >800 || this.x>800 || this.x < -100) {//COLISION
+		if ( this.y >800 || this.x>1250 || this.x < -100) {//COLISION
 			//clearInterval(interval);
 			//sss;
 			//this.ctx.clearRect(0,0,800,800);
@@ -185,7 +185,7 @@ class Shell{
 
 class Worm {
     constructor(col, ctx, ctxWeapons, layout, pixelZoom, brick, orientation = 0){
-		this.damage = 100;
+		this.damage = 1;
         this.col = col;
         this.x = col * pixelZoom;
         this.ctx = ctx;
@@ -493,7 +493,7 @@ class Worm {
 		console.log(X,Y);
 		
 		console.log('%cTARGET ANGLE ' + angle + ' ' + power, 'color:white;background:red;font-size:2em')
-		this.shell = new Shell(angle, power, {x:X, y:Y}, this.ctxWeapons, orientation, this.layout, this.pixelZoom);
+		this.shell = new Shell(0, power, {x:X, y:Y}, this.ctxWeapons, orientation, this.layout, this.pixelZoom);
 		this.shell.simulate();//TODO
 		this.orientation = orientation;
 		
@@ -567,6 +567,14 @@ class Worms extends Window{
         this.programElement.appendChild(this.canvasBackground);
         this.programElement.appendChild(this.canvas);
         this.programElement.appendChild(this.canvasWeapons);
+		
+		
+		this.gameOverElement = document.createElement('DIV');
+		this.gameOverElement.setAttribute('id', 'game-over-worms');
+        this.gameOverElement.style.position = 'absolute';
+        this.gameOverElement.style.top = 0;
+        this.gameOverElement.style.left = 0;
+		this.programElement.appendChild(this.gameOverElement);
         
 		const lastULElement = this.fileDropDownElement.querySelector('li:last-of-type');
         const difficultyMode = ['Beginner', 'Intermediate', 'Expert'];
@@ -605,61 +613,6 @@ class Worms extends Window{
         
         return;
 
-		
-		
-		const wormsHeader = document.createElement('DIV');
-		wormsHeader.setAttribute('id', 'worms-header');
-
-		this.wormsTimer = document.createElement('DIV');
-		this.wormsTimer.setAttribute('id', 'worms-timer');
-		this.wormsTimer.classList.add('worms-digital');
-
-		this.wormsIndicator = document.createElement('DIV');
-		this.wormsIndicator.setAttribute('id', 'worms-indicator');
-
-		this.wormsIndicator.addEventListener('click', (event)=>{
-			this.init();
-			this.reset();
-		});
-
-		this.wormsBombCounter = document.createElement('DIV');
-		this.wormsBombCounter.setAttribute('id', 'worms-bomb-count');
-		this.wormsBombCounter.classList.add('worms-digital');
-
-		wormsHeader.appendChild(this.wormsBombCounter);
-		wormsHeader.appendChild(this.wormsIndicator);
-		wormsHeader.appendChild(this.wormsTimer);
-
-		this.wormsPlay = document.createElement('DIV');
-		this.wormsPlay.setAttribute('id', 'worms-play');
-
-		this.programElement.appendChild(wormsHeader);
-		this.programElement.appendChild(this.wormsPlay);
-
-		
-		
-		const questionMarkOption = document.createElement('LI');
-		questionMarkOption.innerHTML = 'Use Marks ?';
-		questionMarkOption.classList.add('selected');
-
-		questionMarkOption.addEventListener('click', (event)=>{
-			if (event.target.classList.contains('selected')) {
-				event.target.classList.remove('selected');
-				this.useQuestionMark = false;
-				for (let i=0, limit = this.wormsPlay.children.length; i<limit; i++) {
-					this.wormsPlay.children[i].classList.remove('worms-question-indicator');
-					this.wormsPlay.children[i].classList.add('worms-none-indicator');
-				}
-			} else {
-				event.target.classList.add('selected');
-				this.useQuestionMark = true;
-			}
-		});
-		
-		this.useQuestionMark = true;
-
-		this.fileDropDownElement.insertBefore(questionMarkOption, lastULElement);
-		this.neighbourIndexes = Array(3).fill(0).map((a,b)=>+b-1);
 		this.init();
 		this.reset();
 	}
@@ -718,6 +671,14 @@ class Worms extends Window{
 			
 			if (allWorms.every(a=>a.damageChecked == 1)) {
 				clearInterval(interval);
+				if (this.worms.every(a=>a.damage == 0)) {
+					this.gameOver();
+					return;
+				}
+				if (this.enemy.every(a=>a.damage == 0)) {
+					this.nextLevel();
+					return;
+				}
 				setTimeout(()=>{
 					allWorms.forEach(a=>{a.active = 0; a.myTurn=0;a.render()});
 					winXP.wormsGame.nextTurn();	
@@ -754,9 +715,9 @@ class Worms extends Window{
 	drawTopLayer(){
 		for (const w in this.basicLayout[0]) {
 			for (const h in this.basicLayout) {
-				if (this.basicLayout[h][w] == this.brick) {
+				if (this.basicLayout[h][w] == this.brick && this.basicLayout[h-1]?.[w] == ' ') {
 					this.ctxBackground.drawImage(this.topPattern, w * this.cellSize, h * this.cellSize);
-					break;
+					//break;
 				}
 			}
 		}
@@ -782,8 +743,13 @@ class Worms extends Window{
 		}
 	}
     resizeCanvas(){
-        this.canvasWeapons.height = this.canvasBackground.height = this.canvas.height = this.H;
-        this.canvasWeapons.width = this.canvasBackground.width = this.canvas.width = this.W;
+		
+		for (const element of [this.canvasWeapons, this.canvasBackground, this.canvas]) {
+			element.height = this.H;
+			element.width = this.W;
+		}
+		this.gameOverElement.style.height = this.H + this.dimm;
+		this.gameOverElement.style.width = this.W + this.dimm;
     }
     getLayout(){
         return [
@@ -798,7 +764,21 @@ class Worms extends Window{
                 "***************",
                 "***************",
             ],
-            [],
+            [
+                "*                       *",
+                "*                       *",
+                "*                       *",
+                "*     *                 *",
+                "*    *                  *",
+                "*    ****               *",
+                "*       **     *        *",
+                "***********    **       *",
+                "****          ********* *",
+                "*************************",
+                "*************************",
+                "*************************",
+                "*************************",
+            ],
             []
         ][this.difficulty];
     }
@@ -833,9 +813,6 @@ class Worms extends Window{
 		clearInterval(this.interval);
 	}
 
-	updateBombs(){
-		this.wormsBombCounter.innerHTML = this.setValue(this.remainingBombs);
-	}
 
 	setDifficulty(){
 		
@@ -843,7 +820,7 @@ class Worms extends Window{
         this.basicLayout = this.getLayout();
         this.H = this.cellSize * this.basicLayout.length;
         this.W = this.cellSize * this.basicLayout[0].length;
-        
+        console.log(this.H * this.cellSize, this.W*this.cellSize)
         const blockSize = this.cellSize / this.pixelZoom;
         this.binaryH = this.basicLayout.length * blockSize;
         this.binaryW = this.basicLayout[0].length * blockSize;
@@ -890,6 +867,9 @@ class Worms extends Window{
 				this.enemy = [new Worm(12 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick)];
 				break;
 			case 1:
+                this.worms = [new Worm(2 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick, 1)];
+				this.worms[0].activate();
+				this.enemy = [new Worm(20 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick)];
 				break;
 			default:
 				break;
@@ -903,392 +883,52 @@ class Worms extends Window{
 			}
 		});
 
-        this.canvasBackground.backgroundImage = `url("${this.imagesPath}${['eazy'][this.difficulty]}.jpg")`;
-        this.pattern.src = `${this.imagesPath}pattern${['Eazy'][this.difficulty]}.jpg`;
-        this.topPattern.src = `${this.imagesPath}topPattern${['Eazy'][this.difficulty]}.jpg`;
-
+        this.canvasBackground.style.backgroundImage = `url("${this.imagesPath}${this.difficulty}.jpg")`;
+        this.pattern.src = `${this.imagesPath}pattern${this.difficulty}.jpg`;
+        this.topPattern.src = `${this.imagesPath}topPattern${this.difficulty}.jpg`;
+		this.resizeCanvas()
+		this.renderBackground()
 
 	}
 
-	init(){
-
-		const borderWidth = 3;
+	init(){	
 		this.setDifficulty();
-
-		this.wormsPlay.style.height = this.H * this.cellSize + borderWidth * 2 + this.dimm;
-		this.wormsPlay.style.width  = this.W * this.cellSize + borderWidth * 2 + this.dimm;
-		this.wormsPlay.style.borderWidth = borderWidth + this.dimm;
-
-		this.gameOver = false;
-		this.wormsPlay.innerHTML = '';
-		this.wormsIndicator.style.backgroundImage = `url("${this.imagesPath}smile.ico")`;
-
-		const THIS = this;
-		for (let i=0; i<this.H; i++) {
-			for (let j=0; j<this.W; j++) {
-				const cell = document.createElement('DIV');
-				cell.classList.add('worms-cell');
-				cell.classList.add('worms-none-indicator');
-				cell.dataset.row = i;
-				cell.dataset.col = j;
-				cell.style.height = cell.style.width = this.cellSize + this.dimm;
-				cell.style.top = i * this.cellSize + borderWidth * 0 + this.dimm;
-				cell.style.left = j * this.cellSize  + borderWidth * 0 + this.dimm;
-
-				cell.addEventListener('contextmenu', function(){
-					event.preventDefault();
-
-					if(THIS.gameOver || this.classList.contains('worms-free')) {
-						return;
-					}
-
-					const indicatorClasses = [
-						'worms-none-indicator',
-						'worms-flag-indicator',
-						'worms-question-indicator'
-					].slice(0, 2 + THIS.useQuestionMark);
-
-					for (let i=0, length = indicatorClasses.length; i < length; i++) {
-						if (this.classList.contains(indicatorClasses[i])) {
-							this.classList.remove(indicatorClasses[i]);
-							this.classList.add(indicatorClasses[(i + 1) % length]);
-							THIS.remainingBombs += [-1, 1, 0][i];
-							break;
-						}
-					}
-
-					THIS.updateBombs();
-
-				});
-
-				cell.addEventListener('mousedown', (event)=>{
-					if (this.gameOver) {
-						return;
-					}
-					//MOUSE DOWN BUTTON LEFT + MOUSE DOWN BUTTON RIGHT AND NOT ON FLAG
-					const eventMask = '' + event.button + event.buttons + event.which;
-					if (
-						event.target.classList.contains('worms-flag-indicator') == false &&
-						(eventMask == '031' || eventMask == '233')
-					) {
-						this.hoverNeighbours(event.target);
-						return;
-					}
-					
-					if (event.button === 0) {
-						cell.classList.add('hover');
-						this.wormsIndicator.style.backgroundImage = `url("${this.imagesPath}guess.ico")`;
-					}
-
-					
-				});
-
-				cell.addEventListener('mouseup', (event)=>{
-					const eventMask = '' + event.button + event.buttons + event.which;
-
-					if (eventMask == '213') {
-						this.openNeighbours(event.target);
-						return;
-					}
-
-					if (eventMask == '021') {
-						this.wormsPlay.querySelectorAll('.hover').forEach(function(element){
-						    element.classList.remove('hover');
-						});
-					}
-
-					if (this.gameOver) {
-						return;
-					}
-
-					this.wormsIndicator.style.backgroundImage = `url("${this.imagesPath}smile.ico")`;
-
-				});
-
-				cell.addEventListener('click', function(event){
-
-					if (THIS.gameOver || this.classList.contains('worms-flag-indicator')) {
-						return;
-					}
-
-					if (this.classList.contains('worms-free')) {
-						if (event.button === 0 && event.buttons === 2 && event.which === 1) {
-							THIS.openNeighbours(this);	
-						}
-						return;
-					}
-
-					this.classList.remove('worms-question-indicator');
-					this.classList.add('worms-free');
-
-					const row = +this.dataset.row;
-					const col = +this.dataset.col;
-
-					if (THIS.start === false) {
-						THIS.start = true;
-						THIS.startTimer();
-						//FORM RANDOM BOMBS
-						const E = Array(THIS.H * THIS.W).fill(0).map((a,b)=>b);
-						//prevent first cell BOMB
-						let index = row * THIS.W + col;
-						E[index] = E[E.length - 1];
-						E.length--;
-
-						for (let i=0; i<THIS.bombsN; i++) {
-						    index = Math.floor(Math.random() * E.length);
-
-						    const cellNumber = E[index];
-
-						    THIS.bombsGrid[Math.floor(cellNumber / THIS.W)][cellNumber % THIS.W] = '*';
-						    E[index] = E[E.length - 1];
-						    E.length--;
-						}
-
-						for (let i=0; i<THIS.H; i++) {
-							for (let j=0; j<THIS.W; j++) {
-								if (THIS.bombsGrid[i][j] === THIS.bombChar) {
-									continue;
-								}
-								let total = 0;
-								for (const r of THIS.neighbourIndexes) {
-									let rowD = i + r;
-									if (rowD < 0 || rowD == THIS.H) {
-										continue;
-									} 
-									for (const c of THIS.neighbourIndexes) {
-										let colD = j + c;
-										if (colD < 0 || colD == THIS.W) {
-											continue;
-										}
-
-										if (THIS.bombsGrid[rowD][colD] === THIS.bombChar) {
-											total++;
-										}
-									}
-								}
-								THIS.bombsGrid[i][j] = total;
-							}
-						}
-					}
-
-					const cellValue = THIS.bombsGrid[row][col];
-					//EXPLODE GAME OVER
-					if (cellValue === THIS.bombChar) {
-						
-						THIS.gameOver = true;
-						clearInterval(THIS.interval);
-						THIS.wormsIndicator.style.backgroundImage = `url("${THIS.imagesPath}fail.ico")`;//change class instead
-
-						//UPDATE ALL HIDDEN BOMBS AND MISSED BOMBS
-						const children = THIS.wormsPlay.children;
-
-						for (let i=0; i<THIS.H; i++) {
-							for (let j=0; j<THIS.W; j++) {
-								const index = i * THIS.W + j;
-								const hasFlag = children[index].classList.contains('worms-flag-indicator');
-								if (THIS.bombsGrid[i][j] === THIS.bombChar) {
-									if (!hasFlag) {
-										children[index].classList.add('worms-bomb');	
-									}
-								} else if (hasFlag) {
-									children[index].classList.add('worms-miss');
-								}
-							}
-						}
-						this.classList.add('worms-bomb-explode');
-						this.classList.add('worms-bomb');
-						return;
-					}
-
-					//CLICK NEIGHBOURS
-					if (cellValue === 0) {
-						const queue = [{row:row, col:col}];
-						while(queue.length){
-							const queue_copy = [];
-							for (const q of queue) {
-								queue_copy.push({row:q.row, col:q.col});
-							}
-							queue.length = 0;
-							for (const q of queue_copy) {
-
-								for (const r of THIS.neighbourIndexes) {
-									let rowD = q.row + r;
-									if (rowD < 0 || rowD == THIS.H) {
-										continue;
-									} 
-									for (const c of THIS.neighbourIndexes) {
-										let colD = q.col + c;
-										if ( colD < 0 || colD == THIS.W  || THIS.bombsGrid[rowD][colD] === THIS.bombChar) {
-											continue;
-										}
-										const neighbour = this.parentElement.children[colD + rowD * THIS.W];
-										if (neighbour.classList.contains('worms-free') ||
-											neighbour.classList.contains('worms-flag-indicator') ||
-											neighbour.classList.contains('worms-question-indicator')
-										) {
-											continue;
-										}
-										neighbour.classList.add('worms-free');
-										const cellValue2 = THIS.bombsGrid[rowD][colD];
-										if (isNaN(cellValue2) == false && cellValue2 > 0) {
-											neighbour.innerHTML =  cellValue2;
-											neighbour.classList.add('worms-color'+cellValue2);
-										} else {
-											queue.push({row:rowD, col:colD});
-										}
-										
-									}
-								}
-							}
-
-						}
-					} else {
-						this.innerHTML = cellValue;	
-						this.classList.add('worms-color' + cellValue);
-					}
-
-
-					let total_open = 0;
-					const children = THIS.wormsPlay.children;
-					for (let i=0; i<children.length; i++) {
-						if (children[i].classList.contains('worms-free')) {
-							total_open++;
-						}
-					}
-
-					//SUCESS
-					if (total_open + THIS.bombsN == THIS.W * THIS.H) {
-
-						THIS.gameOver = true;
-						clearInterval(THIS.interval);
-						THIS.wormsIndicator.style.backgroundImage = `url("${THIS.imagesPath}success2.ico")`;
-						
-						for (let i=0; i<THIS.H; i++) {
-							for (let j=0; j<THIS.W; j++) {
-								if (THIS.bombsGrid[i][j] === THIS.bombChar) {
-									children[i * THIS.W + j].classList.remove('worms-question-indicator');
-									children[i * THIS.W + j].classList.add('worms-flag-indicator');
-								}
-							}
-						}
-						THIS.remainingBombs = 0;
-						THIS.updateBombs();
-					}
-
-				});
-				this.wormsPlay.appendChild(cell);
-			}
-		}
-
-		this.bombsGrid = [];
-		for (let i=0; i<this.H; i++) {
-			this.bombsGrid[i] = Array(this.W).fill(this.freeChar);
-		}
-
 		this.start = false;
 	}
 
-	getAllNeighbours(row, col){
-		const neighbours = [];
-		for (const r of this.neighbourIndexes) {
-			const R = r + row;
-			if (R<0 || R>=this.H) {
-				continue;
-			}
-			for (const c of this.neighbourIndexes) {
-				const C = c + col;
-				if (C<0 || C>=this.W || r==0 && c==0) {
-					continue;
-				}
-				neighbours.push({row:R, col:C});
-			}
-		}
-		return neighbours;
+	gameOver(){
+		this.setMessage("GAME OVER");	
 	}
-
-	hoverNeighbours(element){
-		const neighbours = this.getAllNeighbours(+element.dataset.row, +element.dataset.col);
-
-		for (const neighbour of neighbours) {
-			const neighbourIndex = neighbour.row * this.W + neighbour.col;
-			const cell = this.wormsPlay.children[neighbourIndex];
-			if (cell.classList.contains('worms-free') ||
-				cell.classList.contains('worms-flag-indicator')
-			) {
-				continue;
-			}
-			cell.classList.add('hover');
-		}
+	nextLevel(){
+		this.setMessage("WIN !!! NEXT LEVEL");
+		setTimeout(()=>{
+			this.difficulty++;
+			this.startGame();
+		}, 2000);
 	}
+	setMessage(message){
 
-	openNeighbours(element){
-		const row = +element.dataset.row;
-		const col = +element.dataset.col;
-		const neighbours = this.getAllNeighbours(row, col);
-		let totalBombs = 0;
-		for (const neighbour of neighbours) {
-			const neighbourIndex = neighbour.row * this.W + neighbour.col;
-			const cell = this.wormsPlay.children[neighbourIndex];
-			if (cell.classList.contains('worms-free') ||
-				(cell.classList.contains('worms-flag-indicator') && (++totalBombs))
-			) {
-				continue;
-			}
-			cell.classList.remove('hover');	
-		}
-		element.classList.remove('hover');
-
-		//IF WRONG CELL IS CLICKED, IT CONTAINS HOBER CLASS
-		let hasHover = false;
-		for (let i=0, limit = this.wormsPlay.children.length; i<limit; i++) {
-			if (this.wormsPlay.children[i].classList.contains('hover')) {
-				hasHover = true;
-				this.wormsPlay.children[i].classList.remove('hover');
-			}
-		}
-
-		if (hasHover === false && this.start && totalBombs === +this.bombsGrid[row][col]) {
-			this.clickAllNeighbours(element);
-		}
-	}
-
-	clickAllNeighbours(element){
-
-		let row = +element.dataset.row;
-		let col = +element.dataset.col;
-
-		const queue = [{row:row, col:col}];
+		this.gameOverElement.className = 'dim';
+		this.gameOverElement.innerHTML = '<div class="message"></div>';
 		
-		while(queue.length){
-			const queue_copy = [];
-			for(const q of queue){
-				queue_copy.push({row:q.row, col:q.col});
-			}
-			queue.length = 0;
-			for(const q of queue_copy){
-				for(const r of this.neighbourIndexes) {
-					row = r + q.row;
-					if (row < 0 || row >= this.H)  {
-						continue;
-					}
-					for(const c of this.neighbourIndexes) {
-						col = c + q.col;
-						if (col < 0 || col >= this.W || r == 0 && c == 0) {
-							continue;
-						}
-						const child_index = row * this.W + col;
-						const cell = this.wormsPlay.children[child_index];
-						if (
-							cell.classList.contains('worms-flag-indicator') ||
-							cell.classList.contains('worms-free')
-						) {
-							continue;
-						}
-						cell.click();
-					}
-				}
-			}
+		const space = '&nbsp';
+		let skipSpace = 0;
 
+		message = message.split``.map(a=>a.replace(/\s/g, space));
+		
+		const timerOffset = message.map((a,b)=>(skipSpace -= a=== space) + b);
+		this.emmitMessage(this.gameOverElement, message, timerOffset, 0);
+
+	}
+	emmitMessage(element, message, timerOffset, childIndex){
+		for (let i=0; i<message.length; i++) {
+			setTimeout(()=>{
+				if(element.children[childIndex]){
+					element.children[childIndex].innerHTML = message.map((a,b)=>{
+						return '<div style="color:'+ (b<=i? 'white':'transparent') +'">' + a + '</div>';
+					}).join``;	
+				}
+			}, (timerOffset[i])*100);
 		}
 	}
 
@@ -1303,10 +943,9 @@ class Worms extends Window{
 	}
 
 	reset(){
-		this.wormsTimer.innerHTML = this.setValue('');
-		this.wormsBombCounter.innerHTML = this.setValue(this.bombsN);
-		this.remainingBombs = this.bombsN;
 		this.clearAllIntervals();
+		this.gameOverElement.classList.remove('dim');
+		this.gameOverElement.innerHTML = '';
 	}
 
 	parentExit(){

@@ -1,4 +1,47 @@
 #worms-canvas-background{
-    background: url('images/eazy.jpg')
+    background: url('images/0.jpg')
         
+}
+#game-over-worms{
+	position: absolute;
+	background-color: rgba(0,0,0,0);
+	/*z-index: 10;*/
+	width: 100%;
+	/*height: 100%;*/
+}
+#game-over-worms > div{
+	position: absolute;
+	background-color: rgba(0,0,0,0);
+	transition: color 1s linear;
+	
+	font-size:  23px;
+	
+	text-align: center;
+	left: 50%;
+	top: 50%;
+	width: 100%;
+	transform: translate(-50%,-50%);
+}
+
+#game-over-worms .message div, .message div{
+	/*display:inline-block;*/
+	display:inline;
+}
+/*#game-over > div > div {
+	color:black;
+	transition: color 5s linear;
+}*/
+#game-over-worms > div > div.dimm {
+	/*color:white;*/
+}
+#game-over-worms.dim{
+	background-color: rgba(0,0,0,.5);
+	z-index: 10;
+	transition: background-color 0.5s linear;
+	/*transform: translate(-50%,-50%);*/
+}
+
+/*transition: color 1s linear;*/
+#game-over-worms.dim > div > div {
+	/*color:white;*/
 }
