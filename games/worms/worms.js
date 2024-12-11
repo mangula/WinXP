@@ -476,7 +476,7 @@ class Worm {
 		const maxAngle = 90;
 		const angleIncrement = 15;
 		const power = (Math.random() * 16 >> 0) + 15;
-		const angle = (Math.random() * (maxAngle/angleIncrement) >> 0) * angleIncrement;
+		const angle = ((Math.random() * (maxAngle/angleIncrement) >> 0) + 1) * angleIncrement;
 		this.bazookaAngle = 90;
 		let orientation = Math.random() < 0.5 ? 1 : 0;
 		orientation = 0;
