@@ -61,7 +61,7 @@ class Shell{
 		const deltaAndleX = this.x - this.prevX;
 		const deltaAndleY = this.y - this.prevY;
 		//console.log(this.x, this.y)
-		this.missleAngle = deltaAndleX ? Math.atan(deltaAndleY / deltaAndleX) : (deltaAndleY > 0 ? 90 : -90) * Math.PI / 180;
+		this.missleAngle = deltaAndleX ? Math.atan(deltaAndleY / deltaAndleX) : (deltaAndleY > 0 ? 90 : -90) * (this.orientation ? 1:-1) * Math.PI / 180;
 		
 		//console.log(this.x, this.y)
 		//console.log(this.missleAngle);
@@ -185,7 +185,7 @@ class Shell{
 
 class Worm {
     constructor(col, ctx, ctxWeapons, layout, pixelZoom, brick, orientation = 0){
-		this.damage = 1;
+		this.damage = 100;
         this.col = col;
         this.x = col * pixelZoom;
         this.ctx = ctx;
@@ -493,7 +493,7 @@ class Worm {
 		console.log(X,Y);
 		
 		console.log('%cTARGET ANGLE ' + angle + ' ' + power, 'color:white;background:red;font-size:2em')
-		this.shell = new Shell(0, power, {x:X, y:Y}, this.ctxWeapons, orientation, this.layout, this.pixelZoom);
+		this.shell = new Shell(angle, power, {x:X, y:Y}, this.ctxWeapons, orientation, this.layout, this.pixelZoom);
 		this.shell.simulate();//TODO
 		this.orientation = orientation;
 		
@@ -880,9 +880,11 @@ class Worms extends Window{
 			case 0:
                 this.worms = [new Worm(2 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick, 1)];
 				this.worms[0].activate();
+				
 				this.enemy = [new Worm(12 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick)];
 				break;
 			case 1:
+				console.log('dasdas')
                 this.worms = [new Worm(2 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick, 1)];
 				this.worms[0].activate();
 				this.enemy = [new Worm(20 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick)];
@@ -965,6 +967,7 @@ class Worms extends Window{
 		this.clearAllIntervals();
 		this.gameOverElement.classList.remove('dim');
 		this.gameOverElement.innerHTML = '';
+		this.wormIndex = 0;
 	}
 
 	parentExit(){
