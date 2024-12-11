@@ -65,7 +65,7 @@ class Shell{
 		
 		//console.log(this.x, this.y)
 		//console.log(this.missleAngle);
-		if ( this.y >800 || this.x>1250 || this.x < -100) {//COLISION
+		if ( this.y >850 || this.x>1250 || this.x < -100) {//COLISION
 			//clearInterval(interval);
 			//sss;
 			//this.ctx.clearRect(0,0,800,800);
@@ -162,7 +162,7 @@ class Shell{
 				clearInterval(interval);
 				const radius = blastRadius * this.pixelZoom;
 				this.ctx.clearRect(X - radius, Y - radius, radius*2, radius*2)
-				this.ctx.clearRect(0,0,800,800)
+				this.ctx.clearRect(0,0,1250,850);
 				winXP.wormsGame.renderBackground();
 				winXP.wormsGame.checkTotalDamage(X, Y, blastRadius * this.pixelZoom);
 			}, (limit) * 33)
@@ -362,7 +362,7 @@ class Worm {
 	}
     adjustH(){
         for (let h=0; h<this.layout.length; h++) {
-            if (this.layout[h][this.col] == this.brick) {
+            if (this.layout[h][this.col] == this.brick && this.layout[h-1]?.[this.col] == ' ') {
                 this.row = h-1;
         		this.y = this.row * this.pixelZoom;
                 break;
@@ -779,7 +779,23 @@ class Worms extends Window{
                 "*************************",
                 "*************************",
             ],
-            []
+            [
+				"*************************",
+                "*************************",
+                "*                       *",
+                "*                       *",
+                "*                       *",
+                "**    *                 *",
+                "**   *                  *",
+                "*    ****               *",
+                "*  *    **     *        *",
+                "***********    **      **",
+                "****  ***     ***   *** *",
+                "**************** *****  *",
+                "****                *****",
+                "*************************",
+                "*************************",
+            ],
         ][this.difficulty];
     }
 
@@ -872,6 +888,9 @@ class Worms extends Window{
 				this.enemy = [new Worm(20 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick)];
 				break;
 			default:
+                this.worms = [new Worm(2 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick, 1)];
+				this.worms[0].activate();
+				this.enemy = [new Worm(22 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick)];
 				break;
 		}
         
@@ -902,7 +921,7 @@ class Worms extends Window{
 	nextLevel(){
 		this.setMessage("WIN !!! NEXT LEVEL");
 		setTimeout(()=>{
-			this.difficulty++;
+			this.difficulty = (this.difficulty + 1) %3;
 			this.startGame();
 		}, 2000);
 	}
