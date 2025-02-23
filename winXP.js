@@ -122,4 +122,4 @@ class WinXP{
 	}
 }
 
-const winXP = new WinXP();
+let winXP = new WinXP();

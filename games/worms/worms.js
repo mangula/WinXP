@@ -32,16 +32,18 @@ for (const src of preloadAssets) {
 	preload.src = 'games/worms/images/explosion.png';
 	preload.addEventListener('load', ()=>{
 		if (--totalAssetsLength == 0) {
-			console.log('all assets preloaded')
+			console.log('all assets preloaded') 
 		}
 	});
 }
 class Shell{
 	constructor(angle, power, startPoint, ctx, orientation, layout, pixelZoom){
+		this.angle = angle;
+		this.power = power;
 		angle = orientation ? 90 - angle : angle - 270;
 		//console.log('%c' + angle + ' ' +  power + ' ' + V.toFixed(2), 'background:red;color:yellow;font-size:2em');
 		this.orientation = orientation;
-		console.log('ORIENTATION', orientation)
+		//console.log('ORIENTATION', orientation)
 		this.x = startPoint.x;
 		this.y = startPoint.y;
 		angle = angle * Math.PI / 180;
@@ -59,11 +61,11 @@ class Shell{
 		this.blastImage.src = 'games/worms/images/explosion.png';
 		this.blastImageH = this.blastImage.height;
 		this.blastImageW = this.blastImage.width;
-		console.log('LOADED2', this.blastImageH, this.blastImageW)
+		//console.log('LOADED2', this.blastImageH, this.blastImageW)
 		
 		this.layout = layout;
 		this.pixelZoom = pixelZoom;
-		console.log('pixelZoom', pixelZoom)
+		//console.log('pixelZoom', pixelZoom)
 
 	}
 	move(){
@@ -78,22 +80,40 @@ class Shell{
 		this.y += this.deltaY;
 		const deltaAndleX = this.x - this.prevX;
 		const deltaAndleY = this.y - this.prevY;
-		//console.log(this.x, this.y)
+		
 		this.missleAngle = deltaAndleX ? Math.atan(deltaAndleY / deltaAndleX) : (deltaAndleY > 0 ? 90 : -90) * (this.orientation ? 1:-1) * Math.PI / 180;
 		
-		//console.log(this.x, this.y)
-		//console.log(this.missleAngle);
-		if ( this.y >850 || this.x>1250 || this.x < -100) {//COLISION
-			//clearInterval(interval);
-			//sss;
-			//this.ctx.clearRect(0,0,800,800);
-			//shell = new Shell((Math.random() * 30 >>0)+45, (Math.random() * 30 >>0) + 30);
-			V = (0.5 - Math.random())*0.5;
-			//V = 0
+		if (this.outOfBounds() ) {
+			//V = (0.5 - Math.random())*0.5;//new wind...
 			this.endTurn();
-			//winXP.wormsGame.nextTurn();
-			//winXP.wormsGame.checkTotalDamage();
 		}
+		
+	}
+	
+	outOfBounds(){
+		return this.y >850 || this.x>1250 || this.x < -100;
+	}
+	simulateMove(){
+		
+		this.prevX = this.x;
+		this.prevY = this.y;
+		
+		this.x += this.deltaX;
+		this.deltaY += G;
+		this.y += this.deltaY;
+		
+		const deltaAndleX = this.x - this.prevX;
+		const deltaAndleY = this.y - this.prevY;
+		
+		//console.log(this.x, this.y, this.prevX, this.prevY,  this.outOfBounds());
+		
+		this.missleAngle = deltaAndleX ? Math.atan(deltaAndleY / deltaAndleX) : (deltaAndleY > 0 ? 90 : -90) * (this.orientation ? 1:-1) * Math.PI / 180;
+		/*const ctx = winXP.wormsGame.ctxBackground;
+		ctx.moveTo(this.x, this.y + 10);
+		ctx.arc(this.x, this.y, 10, 0, 7);
+		ctx.fill();*/
+		
+		return this.outOfBounds();
 		
 	}
 	endTurn(){
@@ -101,6 +121,7 @@ class Shell{
 		
 		clearInterval(this.interval);
 		winXP.wormsGame.checkTotalDamage(this.x, this.y, 0);
+		
 		return;
 		//winXP.wormsGame.nextTurn();
 	}
@@ -121,9 +142,50 @@ class Shell{
 			this.checkCollision();
 		}, 33);
 	}
+	simulatePlay(){
+		const blastRadius = 50;
+		for(;;){
+			let outOfBounds;
+			if((outOfBounds = this.simulateMove()) || this.simulateCollision()){
+				//return winXP.wormsGame.simulateTotalDamage(this.x>>0, this.y>>0, blastRadius * this.pixelZoom**0);
+				//return winXP.wormsGame.simulateTotalDamage(this.x / this.pixelZoom>>0, this.y/this.pixelZoom>>0, blastRadius * this.pixelZoom);
+				const result = winXP.wormsGame.simulateTotalDamage(this.x>>0, this.y>>0, blastRadius);
+				if (outOfBounds) {
+					result.minDistance = 5000;
+				}
+				return result
+			}
+		}
+	}
+	simulateCollision(){
+		const deltaX = this.prevX - this.x;
+		const deltaY = this.prevY - this.y;
+		for (let i=0; i<=1; i += 0.1) {
+			const row = (this.y = this.prevY - deltaY * i) / this.pixelZoom >> 0;
+			const col = (this.x = this.prevX - deltaX * i) / this.pixelZoom >> 0;
+			if (this.layout[row]?.[col] == '*') {
+				return 1;
+				console.log("simulateCollision HIT r:" + row + " c:" + col);
+				const grid = this.layout.map(a=>a.slice());
+				grid[row][col] = 'X';
+				console.log(grid.map(a=>a.join(' ')).join('\n'));
+			}
+		}
+	}
 	checkCollision(){
-		const row = this.y / this.pixelZoom >> 0;
-		const col = this.x / this.pixelZoom >> 0;
+		const deltaX = this.prevX - this.x;
+		const deltaY = this.prevY - this.y;
+		let row, col;
+		
+		for (let i=0; i<=1; i += 0.1) {
+			row = (this.y = this.prevY - deltaY * i) / this.pixelZoom >> 0;
+			col = (this.x = this.prevX - deltaX * i) / this.pixelZoom >> 0;
+			if (this.layout[row]?.[col] == '*') {
+				
+				break;	
+			}
+		}
+		
 		
 		//console.log(row, col)
 		if (this.layout[row]?.[col] == '*') {
@@ -202,16 +264,19 @@ class Shell{
 
 
 class Worm {
-    constructor(col, ctx, ctxWeapons, layout, pixelZoom, brick, orientation = 0){
+    constructor(col, ctx, ctxWeapons, ctxUI, isEnemy, layout, pixelZoom, brick, orientation = 0){
 		this.damage = 100;
         this.col = col;
         this.x = col * pixelZoom;
         this.ctx = ctx;
         this.ctxWeapons = ctxWeapons;
+		this.ctxUI = ctxUI;
+		this.isEnemy = isEnemy;
         this.layout = layout;
         this.pixelZoom = pixelZoom;
         this.brick = brick;
         this.orientation = orientation;
+		
         this.adjustH();
         this.image = new Image();
         //this.image.src = `games/worms/images/worm${orientation?1:''}.png`;
@@ -234,12 +299,21 @@ class Worm {
 			console.log('this.width', this.height)
             this.render()
         });
+		setTimeout(()=>this.renderUIDamage(), 1);
     }
 	activate() {
 		console.log('%cactivate', 'color:yellow;background:blue;font-size:2em')
 		this.myTurn = 1;	
 		this.active = 1;
 		this.render();
+	}
+	simulateDamage(X, Y, blastRadius){
+		//console.log('%csimulateDamage ' + X + ' ' + Y + ' ' + blastRadius, 'color:black; background:lime; font-size:2em')
+		const distance = Math.round(((this.x - X) ** 2 + (this.y - Y) ** 2) ** 0.5);
+		//console.log(X,Y, blastRadius, distance);
+		const damage = Math.max(blastRadius - distance, 0);
+		//console.log(damage);
+		return {damage, distance};
 	}
 	
 	checkDamage(X, Y, blastRadius) {
@@ -258,6 +332,7 @@ class Worm {
 				//winXP.wormsGame.nextTurn();
 			}, 2000);
 			this.damageChecked = 1;
+			
 			return;
 		}
 		//check drop
@@ -309,23 +384,48 @@ class Worm {
 		let targetDamage = originalDamage - this.blastRadius;
 		if (targetDamage < 0) {
 			targetDamage = 0;
-			this.damage = 0;
+			//this.damage = 0;
 		}
-		const limit = 10;
+		const limit = 30;
 		let counter = limit;
 		
-		
+		this.prevDamage = this.damage;
 		this.damageInterval = setInterval(()=>{
 			counter--;
 			if (counter == 0) {
 				clearInterval(this.damageInterval);
 				this.damageChecked = 1;
+				
+				
 			}
 			this.damage = targetDamage + Math.round((originalDamage - targetDamage) * counter / limit);
-			
+			this.renderUIDamage();
 			//console.log(newDamage);
 			this.render();
-		},100);
+			
+		},33);
+	}
+	renderUIDamage(){
+		//console.log('RENDER UI ', this);
+		//let health = deltaDamageEnemy * segments / maxSegmets + enemyHealth;
+		const xOffset = this.isEnemy * this.layout[0].length * this.pixelZoom +  [15, -15][this.isEnemy|0];
+		this.ctxUI.beginPath();
+		this.ctxUI.lineWidth = 1;
+		this.ctxUI.clearRect(xOffset, 15, 150 * [1,-1][this.isEnemy|0], 15);
+		this.ctxUI.strokeStyle = 'white';
+		
+		//this.ctxUI.fillRect(500 + 10,10,health,10);
+		this.ctxUI.fillStyle = 'transparent';
+		this.ctxUI.rect(xOffset, 15, 150 * [1,-1][this.isEnemy|0], 15);
+		
+		this.ctxUI.stroke();
+		
+		this.ctxUI.beginPath();
+		this.ctxUI.fillStyle = this.isEnemy ? 'red' : 'blue';
+		this.ctxUI.rect(xOffset, 15, 1.50*this.damage * [1,-1][this.isEnemy|0], 15);
+		this.ctxUI.fill();
+		this.ctxUI.stroke();
+		//this.
 	}
 	adjustBazookaAngle(direction){
 		this.bazookaAngle -= direction * 10;
@@ -456,27 +556,6 @@ class Worm {
 			}
 		}
 		
-		return
-		this.ctx.moveTo(x-50,y);
-		this.ctx.lineTo(x+50,y);
-		this.ctx.moveTo(x, y-50);
-		this.ctx.lineTo(x, y+50);
-		
-		
-		this.ctx.stroke();
-		return;
-		this.ctx.moveTo(x + deltaX - 50, y + deltaY);
-		this.ctx.lineTo(x + deltaX + 50,y + deltaY);
-		this.ctx.moveTo(x + deltaX, y-50 + deltaY);
-		this.ctx.lineTo(x + deltaX, y+50 + deltaY);
-		this.ctx.stroke();
-		
-		return;
-		this.ctx.moveTo(x-50,y);
-		this.ctx.lineTo(x+50,y);
-		this.ctx.moveTo(x, y-50);
-		this.ctx.lineTo(x, y+50);
-		// we’re done with the rotating so restore the unrotated context
 		
     }
 	play(layout, enemy) {
@@ -493,32 +572,80 @@ class Worm {
 		this.myTurn = 1;
 		const maxAngle = 90;
 		const angleIncrement = 15;
-		const power = (Math.random() * 16 >> 0) + 15;
-		const angle = ((Math.random() * (maxAngle/angleIncrement) >> 0) + 1) * angleIncrement;
-		this.bazookaAngle = 90;
-		let orientation = Math.random() < 0.5 ? 1 : 0;
-		orientation = 0;
-		let X = this.col * this.pixelZoom - this.width / 2;
-		let Y = this.row * this.pixelZoom - this.height / 1.2;
-		const e=0.92;
-		X+=32/2 * 3.5 * (this.orientation ? e: -0.35);
-		Y+=32/2;
-		X -= 32/2 * 3.5 * (this.orientation ? e: -0.35);
+		/*const e=0.92;
+		// drugaciji X u odnosu na oirijentaciju
+		//X += 32/2 * 3.5 * (this.orientation ? e: -0.35);
+		
+		//X -= 32/2 * 3.5 * (this.orientation ? e: -0.35);
 		X += 16;
-		Y+=5;
+		Y += 16 + 5;*/
 		
-		console.log(power, angle, orientation);
-		console.log(X,Y);
+		//console.log(power, angle, orientation);
+		//console.log(X,Y);
 		
-		console.log('%cTARGET ANGLE ' + angle + ' ' + power, 'color:white;background:red;font-size:2em')
-		this.shell = new Shell(angle, power, {x:X, y:Y}, this.ctxWeapons, orientation, this.layout, this.pixelZoom);
-		this.shell.simulate();//TODO
-		this.orientation = orientation;
+		//console.log('%cTARGET ANGLE ' + angle + ' ' + power, 'color:white;background:red;font-size:2em')
+		
+		let X = this.col * this.pixelZoom - this.width / 2 + 16;
+		let Y = this.row * this.pixelZoom - this.height / 1.2 + 5;
+		let maxDamage = -Infinity;
+		let bazookaAngle = 0;
+		let minDistanceToTarget = Infinity;
+		const firedShells = {};
+		for (let i=0;i<100;i++) {
+			const power = (Math.random() * 16 >> 0) + 15;
+			const angle = ((Math.random() * (maxAngle/angleIncrement) >> 0) + 1) * angleIncrement;
+			//
+			let orientation = Math.random() < 0.5 ? 1 : 0;
+			orientation = 0;
+			const shell = new Shell(angle, power, {x:X, y:Y}, this.ctxWeapons, orientation, this.layout, this.pixelZoom);
+			//const shell = new Shell(15, 23, {x:X, y:Y}, this.ctxWeapons, orientation, this.layout, this.pixelZoom);
+			const result = shell.simulatePlay();//TODO	
+			const DAMAGE = result.totalDamage;
+			//console.log('DAMAGE', DAMAGE)
+			//if (DAMAGE > maxDamage && (DAMAGE <= [15,25,50][winXP.wormsGame.difficulty])) {
+			if (DAMAGE > 0) {
+				if(firedShells[DAMAGE] === undefined) {
+					firedShells[DAMAGE] = new Shell(angle, power, {x:X, y:Y}, this.ctxWeapons, orientation, this.layout, this.pixelZoom);
+				}
+				
+			}
+			if (DAMAGE > maxDamage) {
+				maxDamage = DAMAGE;
+				this.shell = new Shell(angle, power, {x:X, y:Y}, this.ctxWeapons, orientation, this.layout, this.pixelZoom);
+				bazookaAngle = angle;
+			} else if (maxDamage <= 0 && minDistanceToTarget > result.minDistance) {
+				minDistanceToTarget = result.minDistance;
+				this.shell = new Shell(angle, power, {x:X, y:Y}, this.ctxWeapons, orientation, this.layout, this.pixelZoom);
+				bazookaAngle = angle;
+			}
+		}
+		const firedShelsDamage = Object.keys(firedShells);
+		const sorted = firedShelsDamage.sort((a,b)=>a-b);
+		const difficulty = winXP.wormsGame.difficulty;
+		const sortedIndex = [0, firedShelsDamage.length -1 >> 1,firedShelsDamage.length - 1][winXP.wormsGame.difficulty];
+		const shellIndex = firedShelsDamage[sortedIndex];
+		//console.log([0, firedShells.length >> 1,firedShells.length - 1][winXP.wormsGame.difficulty]);
+		console.log('sortedIndex',sortedIndex);
+		console.log('firedShelsDamage',firedShelsDamage)
+		console.log(winXP.wormsGame.difficulty);
+		if(firedShells[shellIndex])
+		this.shell = firedShells[shellIndex];
+		
+		console.log('%c shellIndex '+shellIndex,'color:lime;background:black;font-size:2em');
+		//console.log(this.shell)
+		console.log(firedShelsDamage.join(' - '));
+		console.log('%cTARGET ANGLE ' + this.shell.angle + ' ' + this.shell.power, 'color:white;background:red;font-size:2em')
+		console.log('%cmaxDamage '+maxDamage,'color:lime;background:black;font-size:2em');
+		
+		//this.orientation = orientation;
+		this.orientation = 0;
 		
 		this.render();
+		//return;
+		this.bazookaAngle = 90;
 		const interval = setInterval(()=>{
 			
-			const angleDiff = angle - this.bazookaAngle;
+			const angleDiff = bazookaAngle - this.bazookaAngle;
 			console.log('this.bazookaAngle', this.bazookaAngle)
 			if (angleDiff == 0) {
 				clearInterval(interval);
@@ -527,23 +654,11 @@ class Worm {
 				},100);
 			}
 			this.bazookaAngle += 15 * (angleDiff > 0 ? 1:-1);
-			//console.groupCollapse
+		
 			this.render();	
 		}, 100);
 		return;
 		
-		//ssss;
-		//setInterval();
-		
-		
-		
-		//this.simulate();
-		for (;;) {
-			
-			break;
-			
-			
-		}
 	}
 }
 
@@ -581,10 +696,18 @@ class Worms extends Window{
         this.canvasWeapons.style.top = 0;
         this.canvasWeapons.style.left = 0;
         this.ctxWeapons = this.canvasWeapons.getContext('2d');
+
+        this.canvasUI = document.createElement('CANVAS');
+        this.canvasUI.setAttribute('id', 'worms-canvas-UI');
+		this.canvasUI.style.position = 'absolute';
+		this.canvasUI.style.top = 0;
+        this.canvasUI.style.left = 0;
+        this.ctxUI = this.canvasUI.getContext('2d');
 		
         this.programElement.appendChild(this.canvasBackground);
         this.programElement.appendChild(this.canvas);
         this.programElement.appendChild(this.canvasWeapons);
+        this.programElement.appendChild(this.canvasUI);
 		
 		
 		this.gameOverElement = document.createElement('DIV');
@@ -616,23 +739,15 @@ class Worms extends Window{
 		
         this.setDifficulty();
         this.resizeCanvas();
-        this.render();
+        this.renderWindUI();
         this.renderBackground();
 		
 		this.setEventListeners();
-		
 		
 		this.bombChar = '*';//delete
 		this.freeChar = ' ';//delte
 		
 		this.wormIndex = 0; //this.worms.some(a=>a.myturn);
-	
-        	
-        
-        return;
-
-		this.init();
-		this.reset();
 	}
     setEventListeners(){
 		window.addEventListener('keydown', (event)=>{
@@ -676,13 +791,32 @@ class Worms extends Window{
 			}
 		});
 	}
+	simulateTotalDamage(X, Y, blastRadius){
+		//console.log('%csimulate Total Damage X:' + X + ' Y:' + Y + ' blastRadius:' + blastRadius, 'color:black; background:lime; font-size:2em');
+		
+		let totalDamage = 0;
+		let minDistance = Infinity;
+		for (const worm of this.worms){
+			const result = worm.simulateDamage(X,Y,blastRadius);
+			totalDamage += result.damage;
+			if (minDistance > result.distance) {
+				minDistance = result.distance
+			}
+		}
+		for (const worm of this.enemy){
+			const result = worm.simulateDamage(X,Y,blastRadius);
+			totalDamage -= result.damage;
+			
+		}
+		return {totalDamage, minDistance};
+		
+	}
 	checkTotalDamage(X, Y, blastRadius){
-		console.log('%ccheckTotalDamage ' + X + ' ' + Y + ' ' + blastRadius, 'color:black; background:lime; font-size:2em')
+		console.log('%ccheckTotalDamage X:' + X + ' Y:' + Y + ' blastRadius:' + blastRadius, 'color:black; background:lime; font-size:2em')
 		const allWorms = [this.worms,this.enemy].flat(1);
 		for (const worm of allWorms){
 			worm.checkDamage(X,Y,blastRadius);
 		}
-		
 		const interval = setInterval(()=>{
 			//this.myTurn = 0;
 			//this.render();
@@ -705,11 +839,40 @@ class Worms extends Window{
 			}
 		}, 100);
 	}
-    render(){
-        
+    renderWindUI(){
+		return;
+		this.ctxUI.strokeStyle = 1;
+		//this.ctxUI.
+		///V = +.6;
+		const centerX = this.layout[0].length / 2 * this.pixelZoom;
+		this.ctxUI.clearRect(centerX - 50, 15, 100, 15);
+		
+		//this.ctxUI.moveTo(centerX , 15);
+		//this.ctxUI.lineTo(centerX , 30);
+		this.ctxUI.fillStyle = this.ctxUI.strokeStyle = V>0 ? 'red' : 'blue';
+		const increment = V > 0 ? 1 : -1;
+		for (let i=1; i<6; i++) {
+			this.ctxUI.beginPath();
+			this.ctxUI.moveTo(centerX + 7.5 * i * increment, 15 * 1.5);
+			this.ctxUI.lineTo(centerX + 7.5 * i * increment - 0.5 * 15 * increment, 15);
+			this.ctxUI.lineTo(centerX + 7.5 * i * increment - 0.5 * 15 * increment, 30);
+			this.ctxUI.closePath();
+			this.ctxUI.fill();
+		}
+
+		this.ctxUI.clearRect(centerX + 7.5 * 5 * increment, 15, -increment * ( 1 - Math.abs(V) ) * 30, 15);
+        return;
+		//this.ctxUI.rect(this.layout[0].length / 2 * this.pixelZoom, 15, V * 50, 15);
+		//this.ctxUI.rect(centerX - 50, 15, 100, 15);
+		this.ctxUI.beginPath();
+		this.ctxUI.strokeStyle = 'white';
+		this.ctxUI.moveTo(centerX , 0);
+		this.ctxUI.lineTo(centerX , 50);
+		this.ctxUI.stroke();
     }
     renderBackground(){
         this.ctxBackground.clearRect(0, 0, this.W, this.H);
+		//if(0)
         this.pattern.addEventListener('load',()=>{
     		this.drawMainPattern();        
             this.topPattern.addEventListener('load',()=>{
@@ -762,7 +925,7 @@ class Worms extends Window{
 	}
     resizeCanvas(){
 		
-		for (const element of [this.canvasWeapons, this.canvasBackground, this.canvas]) {
+		for (const element of [this.canvasWeapons, this.canvasBackground, this.canvas,  this.canvasUI]) {
 			element.height = this.H;
 			element.width = this.W;
 		}
@@ -850,7 +1013,7 @@ class Worms extends Window{
 
 	setDifficulty(){
 		
-        
+        console.log('SET DIFFF')
         this.basicLayout = this.getLayout();
         this.H = this.cellSize * this.basicLayout.length;
         this.W = this.cellSize * this.basicLayout[0].length;
@@ -896,24 +1059,26 @@ class Worms extends Window{
         console.log('ctx', this.ctx)
         switch(this.difficulty){
 			case 0:
-                this.worms = [new Worm(2 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick, 1)];
+                this.worms = [new Worm(2 * blockSize + 2, this.ctx, this.ctxWeapons, this.ctxUI, 0,this.layout, this.pixelZoom, this.brick, 1)];
 				this.worms[0].activate();
 				
-				this.enemy = [new Worm(12 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick)];
+				this.enemy = [new Worm(12 * blockSize + 2, this.ctx, this.ctxWeapons, this.ctxUI, 1, this.layout, this.pixelZoom, this.brick)];
 				break;
 			case 1:
 				console.log('dasdas')
-                this.worms = [new Worm(2 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick, 1)];
+                this.worms = [new Worm(2 * blockSize + 2, this.ctx, this.ctxWeapons, this.ctxUI, 0, this.layout, this.pixelZoom, this.brick, 1)];
 				this.worms[0].activate();
-				this.enemy = [new Worm(20 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick)];
+				this.enemy = [new Worm(20 * blockSize + 2, this.ctx, this.ctxWeapons, this.ctxUI, 1, this.layout, this.pixelZoom, this.brick)];
 				break;
 			default:
-                this.worms = [new Worm(2 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick, 1)];
+                this.worms = [new Worm(2 * blockSize + 2, this.ctx, this.ctxWeapons, this.ctxUI, 0, this.layout, this.pixelZoom, this.brick, 1)];
 				this.worms[0].activate();
-				this.enemy = [new Worm(22 * blockSize + 2, this.ctx, this.ctxWeapons, this.layout, this.pixelZoom, this.brick)];
+				this.enemy = [new Worm(22 * blockSize + 2, this.ctx, this.ctxWeapons, this.ctxUI, 1, this.layout, this.pixelZoom, this.brick)];
 				break;
 		}
         
+		this.enemyHealth = this.enemy.map(a=>a.damage).reduce((a,b)=>a+b,0);
+		this.wormsHealth = this.worms.map(a=>a.damage).reduce((a,b)=>a+b,0);
 		this.difficultyElements.forEach((element, index)=>{
 			if (index === this.difficulty) {
 				element.classList.add('selected');
